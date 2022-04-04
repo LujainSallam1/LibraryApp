@@ -3,15 +3,18 @@ package nl.first8.library.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "book")
+@SequenceGenerator(name="book_id_seq", initialValue=11, allocationSize=1000)
 public class Book {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="book_id_seq")
     private Long id;
 
     @Column(name = "isbn", nullable = false)
@@ -24,7 +27,7 @@ public class Book {
     private String authors;
 
     @Column(name = "publish_date", nullable = false)
-    private LocalDate publishdDate;
+    private LocalDate publishDate;
 
     @Column(name = "borrowed", columnDefinition = "boolean default false")
     private boolean borrowed;
@@ -61,12 +64,12 @@ public class Book {
         this.authors = authors;
     }
 
-    public LocalDate getPublishdDate() {
-        return publishdDate;
+    public LocalDate getPublishDate() {
+        return publishDate;
     }
 
-    public void setPublishdDate( LocalDate publishdDate ) {
-        this.publishdDate = publishdDate;
+    public void setPublishDate( LocalDate publishdDate ) {
+        this.publishDate = publishdDate;
     }
 
     public boolean isBorrowed() {
