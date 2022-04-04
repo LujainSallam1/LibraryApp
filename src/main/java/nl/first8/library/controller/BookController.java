@@ -26,62 +26,47 @@ public class BookController {
 
     @GetMapping("/books")
     public List<Book> getAll() {
-        return bookRepository.findAll();
+        return null; //TODO implement
     }
 
     @GetMapping("/books/{id}")
     public ResponseEntity<Book> getById( @PathVariable(value = "id") Long id) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found on :: " + id));
+        Book book = null; //TODO implement
         return ResponseEntity.ok(book);
     }
 
     @PostMapping("/books")
     public Book add(@RequestBody Book book) {
-        return bookRepository.save(book);
+        return null;
     }
 
     @PutMapping("/books/{id}")
     public ResponseEntity<Book> update(@PathVariable(value = "id") Long id, @RequestBody Book book) {
-        Book bookFromDatabase = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found on :: " + id));
-
-        bookFromDatabase.setAuthors(book.getAuthors());
-        bookFromDatabase.setIsbn(book.getIsbn());
-        bookFromDatabase.setPublishdDate(book.getPublishdDate());
-        bookFromDatabase.setTitle(book.getTitle());
-
-        Book updatedBook = bookRepository.save(bookFromDatabase);
+        //TODO
+        Book updatedBook = null;
         return ResponseEntity.ok(updatedBook);
     }
 
-    @DeleteMapping("/books/{id}")
-    public Map<String, Boolean> delete(@PathVariable(value = "id") Long id) {
-        bookRepository.deleteById(id);
-        Map<String, Boolean> map = new HashMap<>();
-        map.put("deleted", true);
+    @DeleteMapping("/books/{isbn}")
+    public Map<String, Boolean> delete(@PathVariable( value = "isbn") String isbn) {
+        //TODO
+        Map<String, Boolean> map = null;
         return map;
     }
 
     @PutMapping("/books/{id}/borrow")
     public ResponseEntity<Book> borrow(@PathVariable(value = "id") Long id) {
-        Book bookFromDatabase = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found on :: " + id));
+        //TODO
 
-        bookFromDatabase.setBorrowed(true);
-
-        Book updatedBook = bookRepository.save(bookFromDatabase);
+        Book updatedBook = null;
         return ResponseEntity.ok(updatedBook);
     }
 
     @PutMapping("/books/{id}/handin")
     public ResponseEntity<Book> handin(@PathVariable(value = "id") Long id) {
-        Book bookFromDatabase = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found on :: " + id));
+        //TODO
 
-        bookFromDatabase.setBorrowed(false);
-
-        Book updatedBook = bookRepository.save(bookFromDatabase);
+        Book updatedBook = null;
         return ResponseEntity.ok(updatedBook);
     }
 }
