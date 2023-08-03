@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -30,9 +31,16 @@ public class BookController {
     }
 
     @GetMapping("/books/{id}")
-    public ResponseEntity<Book> getById( @PathVariable(value = "id") Long id) {
-        Book book = null; //TODO implement
-        return ResponseEntity.ok(book);
+    public ResponseEntity<Book> getById( @PathVariable(value = "id") Long id)  {
+        Optional<Book> book = bookRepository.findById(id);
+
+        if (book.isPresent()){
+            return ResponseEntity.ok(book.get());
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
     @PostMapping("/books")
