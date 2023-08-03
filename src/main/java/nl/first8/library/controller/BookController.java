@@ -3,7 +3,6 @@ package nl.first8.library.controller;
 import nl.first8.library.domain.Book;
 import nl.first8.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
+import javax.persistence.Column;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -24,49 +23,95 @@ public class BookController {
     @Autowired
     private BookRepository bookRepository;
 
+
     @GetMapping("/books")
     public List<Book> getAll() {
-        return null; //TODO implement
+        return bookRepository.findAll();
     }
 
     @GetMapping("/books/{id}")
-    public ResponseEntity<Book> getById( @PathVariable(value = "id") Long id) {
-        Book book = null; //TODO implement
-        return ResponseEntity.ok(book);
+    public ResponseEntity<Book> getById(@PathVariable Long id) {
+        Optional<Book> optionalBook = bookRepository.findById(id);
+        if (optionalBook.isPresent()) {
+            Book book = optionalBook.get();
+            return ResponseEntity.ok(book);
+        } else
+            return ResponseEntity.notFound().build();
+
     }
 
+//    @GetMapping("/books/{sbn}")
+//    public ResponseEntity<Book> getByIsbn(@PathVariable String isbn) {
+//        Optional<Book> optionalBook = bookRepository.findByIsbn(isbn);
+//        if (optionalBook.isPresent()) {
+//            Book book = optionalBook.get();
+//            return ResponseEntity.ok(book);
+//        } else
+//            return ResponseEntity.notFound().build();
+//
+//    }
+
     @PostMapping("/books")
-    public Book add(@RequestBody Book book) {
-        return null;
+    public ResponseEntity<Book> add(@RequestBody Book book) {
+        Book savedbook = bookRepository.save(book);
+        return ResponseEntity.ok(savedbook);
     }
+
 
     @PutMapping("/books/{id}")
     public ResponseEntity<Book> update(@PathVariable(value = "id") Long id, @RequestBody Book book) {
-        //TODO
-        Book updatedBook = null;
-        return ResponseEntity.ok(updatedBook);
+        Optional<Book> optionalBook = bookRepository.findById(id);
+        if (optionalBook.isPresent()) {
+            Book orginalbook = optionalBook.get();
+            orginalbook.setIsbn(book.getIsbn());
+            orginalbook.setTitle(book.getTitle());
+            orginalbook.setAuthors(book.getAuthors());
+            orginalbook.setPublishDate(book.getPublishDate());
+            orginalbook.setSummary(book.getSummary());
+
+            Book updatedBookEntity = bookRepository.save(book);
+            return ResponseEntity.ok(updatedBookEntity);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/books/{isbn}")
-    public Map<String, Boolean> delete(@PathVariable( value = "isbn") String isbn) {
-        //TODO
-        Map<String, Boolean> map = null;
-        return map;
+    public ResponseEntity<Book> delet(@PathVariable String isbn) {
+        Optional<Book> optionalBook = bookRepository.findByIsbn((isbn));
+        if (optionalBook.isPresent()) {
+            bookRepository.deleteByIsbn(isbn);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
+
     }
 
     @PutMapping("/books/{id}/borrow")
-    public ResponseEntity<Book> borrow(@PathVariable(value = "id") Long id) {
-        //TODO
+    public boolean borrow(@PathVariable(value = "id") Long id) {
+        Optional<Book> optionalBook = bookRepository.findById(id);
+        if (optionalBook.isPresent()) {
+            Book book = optionalBook.get();
 
-        Book updatedBook = null;
-        return ResponseEntity.ok(updatedBook);
-    }
+            if (!book.isBorrowed()) {
+                book.setBorrowed(true);
+                bookRepository.save(book);
+                return true;
 
-    @PutMapping("/books/{id}/handin")
-    public ResponseEntity<Book> handin(@PathVariable(value = "id") Long id) {
-        //TODO
-
-        Book updatedBook = null;
-        return ResponseEntity.ok(updatedBook);
+            } else {
+                if (book.isBorrowed()) {
+                    book.setBorrowed(false);
+                    bookRepository.save(book);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
+
+
+
+
