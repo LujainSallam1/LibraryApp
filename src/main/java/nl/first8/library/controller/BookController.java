@@ -45,7 +45,10 @@ public class BookController {
 
     @PostMapping("/books")
     public Book add(@RequestBody Book book) {
-        return null;
+
+        Book savedBook = bookRepository.save(book);
+
+        return savedBook;
     }
 
     @PutMapping("/books/{id}")
