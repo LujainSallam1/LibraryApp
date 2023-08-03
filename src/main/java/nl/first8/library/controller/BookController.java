@@ -26,7 +26,7 @@ public class BookController {
 
     @GetMapping("/books")
     public List<Book> getAll() {
-        return null; //TODO implement
+        return this.bookRepository.findAll();
     }
 
     @GetMapping("/books/{id}")
