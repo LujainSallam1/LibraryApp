@@ -3,7 +3,6 @@ package nl.first8.library.controller;
 import nl.first8.library.domain.Book;
 import nl.first8.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -26,32 +26,48 @@ public class BookController {
 
     @GetMapping("/books")
     public List<Book> getAll() {
-        return null; //TODO implement
+        return new ArrayList<>(bookRepository.findAll()); //TODO implement
     }
+    
 
     @GetMapping("/books/{id}")
-    public ResponseEntity<Book> getById( @PathVariable(value = "id") Long id) {
-        Book book = null; //TODO implement
-        return ResponseEntity.ok(book);
+    public Book getByID(@PathVariable("id") String id){
+        return bookRepository.findById(Long.valueOf(id)).get();//TODO implement
     }
 
     @PostMapping("/books")
     public Book add(@RequestBody Book book) {
-        return null;
+        return bookRepository.save(book);
     }
 
     @PutMapping("/books/{id}")
     public ResponseEntity<Book> update(@PathVariable(value = "id") Long id, @RequestBody Book book) {
-        //TODO
-        Book updatedBook = null;
-        return ResponseEntity.ok(updatedBook);
+        Optional<Book> bookoud = bookRepository.findById(id);
+        if (!bookoud.isPresent()){
+            return null;
+        }
+        Book updateBook = bookoud.get();
+
+        if (book.getIsbn() != null){
+            updateBook.setIsbn(book.getIsbn());
+        }
+        if (book.getTitle() != null){
+            updateBook.setTitle(book.getTitle());
+        }
+        if (book.getAuthors() != null){
+            updateBook.setAuthors(book.getAuthors());
+        }
+        if (book.getPublishDate() != null){
+            updateBook.setPublishDate(book.getPublishDate());
+        }
+        updateBook.setBorrowed(book.isBorrowed());
+
+        return ResponseEntity.ok(bookRepository.save(updateBook));
     }
 
     @DeleteMapping("/books/{isbn}")
     public Map<String, Boolean> delete(@PathVariable( value = "isbn") String isbn) {
-        //TODO
-        Map<String, Boolean> map = null;
-        return map;
+        return bookRepository.deleteById(Long.valueOf(isbn)).get();
     }
 
     @PutMapping("/books/{id}/borrow")
