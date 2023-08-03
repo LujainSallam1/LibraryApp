@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -52,9 +49,24 @@ public class BookController {
     }
 
     @PutMapping("/books/{id}")
-    public ResponseEntity<Book> update(@PathVariable(value = "id") Long id, @RequestBody Book book) {
-        //TODO
-        Book updatedBook = null;
+    public ResponseEntity<Book> update(@PathVariable(value = "id") Long id, @RequestBody Book body) {
+        Optional<Book> bookOptional = bookRepository.findById(id);
+        Book bookDB;
+
+        if (bookOptional.isPresent()){
+            bookDB = bookOptional.get();
+
+            if (Objects.nonNull(body.getIsbn()))          bookDB.setIsbn(body.getIsbn());
+            if (Objects.nonNull(body.getTitle()))         bookDB.setTitle(body.getTitle());
+            if (Objects.nonNull(body.getAuthors()))       bookDB.setAuthors(body.getAuthors());
+            if (Objects.nonNull(body.getPublishDate()))   bookDB.setPublishDate(body.getPublishDate());
+            /* no need to check borrowed bc has default*/ bookDB.setBorrowed(body.isBorrowed());
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
+
+        Book updatedBook = bookRepository.save(bookDB);
         return ResponseEntity.ok(updatedBook);
     }
 
