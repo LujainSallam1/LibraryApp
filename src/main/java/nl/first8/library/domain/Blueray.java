@@ -8,13 +8,12 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDate;
-
 @Entity
-@Table(name = "book")
-@SequenceGenerator(name="book_id_seq", initialValue=11, allocationSize=1000)
-public class Book {
+@Table(name = "blueray")
+@SequenceGenerator(name="blueray_id_seq", initialValue=11, allocationSize=1000)
+public class Blueray {
     @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="book_id_seq")
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="blueray_id_seq")
     private Long id;
 
     @Column(name = "isbn", nullable = false)
@@ -34,18 +33,6 @@ public class Book {
 
     @Column(name = "summary", nullable = true)
     private String summary;
-
-    public Book() {
-
-    }
-    public Book(String isbn, String title, String authors, LocalDate publishDate, Boolean borrowed){
-        this.isbn = isbn;
-        this.title = title;
-        this.authors = authors;
-        this.publishDate = publishDate;
-        this.borrowed = borrowed;
-        this.summary = summary;
-    }
 
     public Long getId() {
         return id;

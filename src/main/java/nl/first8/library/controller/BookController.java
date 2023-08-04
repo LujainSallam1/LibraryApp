@@ -3,6 +3,7 @@ package nl.first8.library.controller;
 import nl.first8.library.domain.Book;
 import nl.first8.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,29 +62,53 @@ public class BookController {
         if (book.getPublishDate() != null){
             updateBook.setPublishDate(book.getPublishDate());
         }
-        updateBook.setBorrowed(book.isBorrowed());
+
+        if (book.getSummary() != null) {
+            updateBook.setSummary(book.getSummary());
+        }
 
         return ResponseEntity.ok(bookRepository.save(updateBook));
     }
 
     @DeleteMapping("/books/{isbn}")
     public Map<String, Boolean> delete(@PathVariable( value = "isbn") String isbn) {
-        return bookRepository.deleteById(Long.valueOf(isbn)).get();
+        Map<String, Boolean> map;
+        bookRepository.deleteByIsbn(isbn);
+        return null;
     }
 
     @PutMapping("/books/{id}/borrow")
     public ResponseEntity<Book> borrow(@PathVariable(value = "id") Long id) {
         //TODO
+        Optional<Book> findBook = bookRepository.findById(id);
+        if (!findBook.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found");
+        }
 
-        Book updatedBook = null;
-        return ResponseEntity.ok(updatedBook);
+        Book updatedBook = findBook.get();
+        if (updatedBook.isBorrowed()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book had already borrowed");
+        }
+        updatedBook.setBorrowed(true);
+
+        return ResponseEntity.ok(bookRepository.save(updatedBook));
     }
 
     @PutMapping("/books/{id}/handin")
     public ResponseEntity<Book> handin(@PathVariable(value = "id") Long id) {
         //TODO
 
-        Book updatedBook = null;
-        return ResponseEntity.ok(updatedBook);
+        Optional<Book> findBook = bookRepository.findById(id);
+        if (!findBook.isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found");
+        }
+
+        Book updatedBook = findBook.get();
+        if (!updatedBook.isBorrowed()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book had already handin");
+        }
+        updatedBook.setBorrowed(false);
+
+        return ResponseEntity.ok(bookRepository.save(updatedBook));
     }
 }

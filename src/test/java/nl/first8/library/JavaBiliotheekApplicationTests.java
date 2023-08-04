@@ -12,13 +12,7 @@ class JavaBiliotheekApplicationTests {
 
     @Test
     void contextLoads() {
-//        public List<Book> getAll() {
-//        List<Book> books = new ArrayList<>();
-//            for (Book val: Book.values()) {
-//                books.add(val);
-//            }
-//            return books;
-//        }
+
     }
 
 }
