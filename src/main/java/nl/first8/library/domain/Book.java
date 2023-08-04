@@ -1,13 +1,8 @@
 package nl.first8.library.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "book")
@@ -16,6 +11,12 @@ public class Book {
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="book_id_seq")
     private Long id;
+
+
+    @ManyToOne
+    @JoinColumn(name="member_id_seq")
+    private Members member;
+
 
     @Column(name = "isbn", nullable = false)
     private String isbn;
@@ -31,6 +32,17 @@ public class Book {
 
     @Column(name = "borrowed", columnDefinition = "boolean default false")
     private boolean borrowed;
+
+    @Column(name = "summary")
+    private String summary;
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
 
     public Long getId() {
         return id;
