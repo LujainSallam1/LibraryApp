@@ -35,6 +35,7 @@ public class BookController {
             return ResponseEntity.ok(book.get());
         }
         else {
+            //TODO: better response
             return ResponseEntity.notFound().build();
         }
 
@@ -89,18 +90,25 @@ public class BookController {
 
     @PutMapping("/books/{id}/borrow")
     public ResponseEntity<Book> borrow(@PathVariable(value = "id") Long id) {
-        //TODO
-        //bookDB.setBorrowed(body.isBorrowed());
+        Book book = bookRepository.getById(id);
+        if(book.isBorrowed()){
+            //TODO: better response
+            return ResponseEntity.notFound().build();
+        }
 
-        Book updatedBook = null;
+        book.setBorrowed(true);
+
+        Book updatedBook = bookRepository.save(book);
         return ResponseEntity.ok(updatedBook);
     }
 
     @PutMapping("/books/{id}/handin")
     public ResponseEntity<Book> handin(@PathVariable(value = "id") Long id) {
-        //TODO
+        Book book = bookRepository.getById(id);
 
-        Book updatedBook = null;
+        book.setBorrowed(false);
+
+        Book updatedBook = bookRepository.save(book);
         return ResponseEntity.ok(updatedBook);
     }
 }
