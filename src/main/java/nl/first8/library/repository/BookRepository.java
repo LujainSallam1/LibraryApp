@@ -11,4 +11,5 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Transactional
     void deleteByIsbn(String isbn);
 
+
 }

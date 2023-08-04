@@ -1,12 +1,6 @@
 package nl.first8.library.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -31,6 +25,26 @@ public class Book {
 
     @Column(name = "borrowed", columnDefinition = "boolean default false")
     private boolean borrowed;
+
+    @Column(name = "summary")
+    private String summary;
+
+//    @ManyToOne()
+//    @JoinColumn(name = "lid_id", insertable = false, updatable = false)
+//    private Lid lid;
+
+
+
+    public Book(){}
+
+//    public Book(String isbn, String title, String authors, LocalDate publishDate, boolean borrowed, String summary){
+//        this.isbn = isbn;
+//        this.title = title;
+//        this.authors = authors;
+//        this.publishDate = publishDate;
+//        this.borrowed = borrowed;
+//        this.summary = summary;
+//    }
 
     public Long getId() {
         return id;
@@ -78,5 +92,13 @@ public class Book {
 
     public void setBorrowed( boolean borrowed ) {
         this.borrowed = borrowed;
+    }
+
+    public String getSummary(){
+        return summary;
+    }
+
+    public void setSummary( String summary ) {
+        this.summary = summary;
     }
 }
