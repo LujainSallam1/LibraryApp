@@ -60,7 +60,7 @@ public class BookController {
             if (Objects.nonNull(body.getTitle()))         bookDB.setTitle(body.getTitle());
             if (Objects.nonNull(body.getAuthors()))       bookDB.setAuthors(body.getAuthors());
             if (Objects.nonNull(body.getPublishDate()))   bookDB.setPublishDate(body.getPublishDate());
-            /* no need to check borrowed bc has default*/ bookDB.setBorrowed(body.isBorrowed());
+
         }
         else {
             return ResponseEntity.notFound().build();
@@ -73,13 +73,24 @@ public class BookController {
     @DeleteMapping("/books/{isbn}")
     public Map<String, Boolean> delete(@PathVariable( value = "isbn") String isbn) {
         //TODO
-        Map<String, Boolean> map = null;
+        List<Book> booksWithIsbn = bookRepository.findByIsbn(isbn);
+        Map<String, Boolean> map = new HashMap<>();
+
+        for(int i=0 ; i<booksWithIsbn.size(); i++){
+            Book book = booksWithIsbn.get(i);
+            Long id = book.getId();
+            bookRepository.deleteById(id);
+            Boolean hasBeenDeleted = ! bookRepository.findById(id).isPresent();
+
+            map.put(id.toString(), hasBeenDeleted);
+        }
         return map;
     }
 
     @PutMapping("/books/{id}/borrow")
     public ResponseEntity<Book> borrow(@PathVariable(value = "id") Long id) {
         //TODO
+        //bookDB.setBorrowed(body.isBorrowed());
 
         Book updatedBook = null;
         return ResponseEntity.ok(updatedBook);
