@@ -19,8 +19,7 @@ public class BluRayController {
     @GetMapping("/blurays")
     @ResponseBody
     public List<BluRay> getAll() {
-        List<BluRay> blurays = new ArrayList<>(bluRayRepository.findAll());
-        return ResponseEntity.ok(blurays).getBody(); //TODO implement
+        return bluRayRepository.findAll();
     }
 
     @GetMapping("/blurays/{id}")
