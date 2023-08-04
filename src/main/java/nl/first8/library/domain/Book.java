@@ -32,6 +32,9 @@ public class Book {
     @Column(name = "borrowed", columnDefinition = "boolean default false")
     private boolean borrowed;
 
+    @Column(name = "summary")
+    private String summary;
+
     public Long getId() {
         return id;
     }
@@ -78,5 +81,13 @@ public class Book {
 
     public void setBorrowed( boolean borrowed ) {
         this.borrowed = borrowed;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 }

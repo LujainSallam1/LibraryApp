@@ -61,6 +61,7 @@ public class BookController {
             if (Objects.nonNull(body.getTitle()))         bookDB.setTitle(body.getTitle());
             if (Objects.nonNull(body.getAuthors()))       bookDB.setAuthors(body.getAuthors());
             if (Objects.nonNull(body.getPublishDate()))   bookDB.setPublishDate(body.getPublishDate());
+            if (Objects.nonNull(body.getSummary()))       bookDB.setSummary(body.getSummary());
 
         }
         else {
