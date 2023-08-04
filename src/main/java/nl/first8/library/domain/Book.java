@@ -1,18 +1,14 @@
 package nl.first8.library.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "book")
 @SequenceGenerator(name="book_id_seq", initialValue=11, allocationSize=1000)
 public class Book {
+
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="book_id_seq")
     private Long id;
@@ -34,6 +30,7 @@ public class Book {
 
     @Column(name = "summary")
     private String summary;
+
 
     public String getSummary() {
         return summary;
