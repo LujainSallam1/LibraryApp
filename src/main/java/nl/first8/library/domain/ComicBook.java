@@ -2,23 +2,18 @@ package nl.first8.library.domain;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Set;
 
 @Entity
-@Table(name = "book")
-@SequenceGenerator(name="book_id_seq", initialValue=11, allocationSize=1000)
-public class Book {
+@Table(name = "comicBook")
+@SequenceGenerator(name="comicBook_id_seq", initialValue=11, allocationSize=1000)
+public class ComicBook {
     @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="book_id_seq")
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="comicBook_id_seq")
     private Long id;
-
 
     @ManyToOne
     @JoinColumn(name="member_id_seq")
     private Members member;
-
-    @Column(name = "isbn", nullable = false)
-    private String isbn;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -35,35 +30,19 @@ public class Book {
     @Column(name = "summary")
     private String summary;
 
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
     public Long getId() {
         return id;
     }
 
-    public void setId( Long id ) {
+    public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn( String isbn ) {
-        this.isbn = isbn;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle( String title ) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -71,7 +50,7 @@ public class Book {
         return authors;
     }
 
-    public void setAuthors( String authors ) {
+    public void setAuthors(String authors) {
         this.authors = authors;
     }
 
@@ -79,15 +58,23 @@ public class Book {
         return publishDate;
     }
 
-    public void setPublishDate( LocalDate publishdDate ) {
-        this.publishDate = publishdDate;
+    public void setPublishDate(LocalDate publishDate) {
+        this.publishDate = publishDate;
     }
 
     public boolean isBorrowed() {
         return borrowed;
     }
 
-    public void setBorrowed( boolean borrowed ) {
+    public void setBorrowed(boolean borrowed) {
         this.borrowed = borrowed;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 }

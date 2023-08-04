@@ -15,16 +15,14 @@ public class Members {
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="memeber_id_seq")
     private Long id;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany
     private Set<Book> book;
 
-    public Set<Book> getBook() {
-        return book;
-    }
+    @OneToMany
+    private Set<BluRay> bluray;
 
-    public void setBook(Set<Book> book) {
-        this.book = book;
-    }
+    @OneToMany
+    private Set<ComicBook> comicBook;
 
     @Column(name = "first_last_name", nullable = false)
     private String name;
@@ -53,6 +51,22 @@ public class Members {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Set<Book> getBook() {
+        return book;
+    }
+
+    public void setBook(Set<Book> book) {
+        this.book = book;
+    }
+
+    public Set<BluRay> getBluray() {
+        return bluray;
+    }
+
+    public void setBluray(Set<BluRay> bluray) {
+        this.bluray = bluray;
     }
 
     public String getName() {

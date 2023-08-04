@@ -1,10 +1,10 @@
 package nl.first8.library.repository;
 
-import nl.first8.library.domain.BluRay;
-import nl.first8.library.domain.Members;
+import nl.first8.library.domain.ComicBook;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MemberRepository extends JpaRepository<Members, Long> {
+public interface ComicBookRepository extends JpaRepository<ComicBook, Long> {
+
 }

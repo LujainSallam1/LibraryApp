@@ -1,12 +1,6 @@
 package nl.first8.library.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -16,6 +10,10 @@ public class BluRay {
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="bluray_id_seq")
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name="member_id_seq")
+    private Members member;
 
     @Column(name = "title", nullable = false)
     private String title;

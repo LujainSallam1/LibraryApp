@@ -1,7 +1,11 @@
 package nl.first8.library.controller;
 
+import nl.first8.library.domain.BluRay;
 import nl.first8.library.domain.Book;
+import nl.first8.library.domain.ComicBook;
 import nl.first8.library.domain.Members;
+import nl.first8.library.repository.BluRayRepository;
+import nl.first8.library.repository.ComicBookRepository;
 import nl.first8.library.repository.MemberRepository;
 import nl.first8.library.repository.BookRepository;
 import org.apache.coyote.Response;
@@ -28,6 +32,12 @@ public class MemberController {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private BluRayRepository blurayRepository;
+
+    @Autowired
+    private ComicBookRepository comicBookRepository;
 
     @GetMapping("/member")
     public ResponseEntity<List<Members>> getAll() {
@@ -82,22 +92,6 @@ public class MemberController {
         return ResponseEntity.ok(memberRepository.save(updateMember));
     }
 
-    @PutMapping("/member/{id}/book/{id_book}")
-    public ResponseEntity<Members> lenen(@PathVariable(value = "id") Long id, @PathVariable(value = "id_book") Long id_book) {
-        //book;
-        Optional<Members> memberoud = memberRepository.findById(id);
-        if (!memberoud.isPresent()) {
-            return null;
-        }
-        Members updateMember = memberoud.get();
-
-        Optional<Book> book = bookRepository.findById(id_book);
-        Book infoBook = book.get();
-
-        updateMember.getBook().add(infoBook);
-        return ResponseEntity.ok(memberRepository.save(updateMember));
-    }
-    
     @PutMapping("/member/{id}/active")
     public ResponseEntity<Members> active(@PathVariable(value = "id") Long id, @RequestBody Members member) {
         Optional<Members> memberoud = memberRepository.findById(id);
@@ -115,4 +109,71 @@ public class MemberController {
         return ResponseEntity.ok(memberRepository.save(updateMember));
     }
 
+    @PutMapping("/member/{id}/book/{id_book}")
+    public ResponseEntity<String> lenenbook(@PathVariable(value = "id") Long id, @PathVariable(value = "id_book")
+    Long id_book) {
+        Optional<Members> memberoud = memberRepository.findById(id);
+        Optional<Book> book = bookRepository.findById(id_book);
+        if (!memberoud.isPresent() && !book.isPresent()) {
+            return null;
+        }
+        Members updateMember = memberoud.get();
+        Book infoBook = book.get();
+
+        int now = updateMember.getProducts();
+
+        if (updateMember.getBook().contains(infoBook)) {
+            updateMember.getBook().remove(infoBook);
+            updateMember.setProducts(updateMember.getProducts() + 1);
+            memberRepository.save(updateMember);
+            infoBook.setBorrowed(false);
+            bookRepository.save(infoBook);
+            return ResponseEntity.ok("gelukt om een item terug te brengen");
+        } else {
+            updateMember.getBook().add(infoBook);
+            if (now == 0){
+                return ResponseEntity.ok("Zijn al te veel items geleend");
+            } else {
+                updateMember.setProducts(updateMember.getProducts() - 1);
+                memberRepository.save(updateMember);
+                infoBook.setBorrowed(true);
+                bookRepository.save(infoBook);
+                return ResponseEntity.ok("gelukt om een item te huren");
+            }
+        }
+    }
+
+    @PutMapping("/member/{id}/bluray/{id_bluray}")
+    public ResponseEntity<String> lenenbluray(@PathVariable(value = "id") Long id, @PathVariable(value = "id_bluray")
+    Long id_bluray) {
+        Optional<Members> memberoud = memberRepository.findById(id);
+        Optional<BluRay> bluRay = blurayRepository.findById(id_bluray);
+        if (!memberoud.isPresent() && !bluRay.isPresent()) {
+            return null;
+        }
+        Members updateMember = memberoud.get();
+        BluRay infoBluray = bluRay.get();
+
+        int now = updateMember.getProducts();
+
+        if (updateMember.getBluray().contains(infoBluray)) {
+            updateMember.getBluray().remove(infoBluray);
+            updateMember.setProducts(updateMember.getProducts() + 1);
+            memberRepository.save(updateMember);
+            infoBluray.setBorrowed(false);
+            blurayRepository.save(infoBluray);
+            return ResponseEntity.ok("gelukt om een item terug te brengen");
+        } else {
+            updateMember.getBluray().add(infoBluray);
+            if (now == 0){
+                return ResponseEntity.ok("Zijn al te veel items geleend");
+            } else {
+                updateMember.setProducts(updateMember.getProducts() - 1);
+                memberRepository.save(updateMember);
+                infoBluray.setBorrowed(true);
+                blurayRepository.save(infoBluray);
+                return ResponseEntity.ok("gelukt om een item te huren");
+            }
+        }
+    }
 }
