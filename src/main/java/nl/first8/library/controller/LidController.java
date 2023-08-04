@@ -26,8 +26,6 @@ public class LidController {
     @GetMapping("/leden")
     @ResponseBody
     public List<Lid> getAll(){
-//        List<Lid> leden = new ArrayList<>(lidRepository.findAll());
-//        List<Lid> lid = lidRepository.findAll();
         return lidRepository.findAll();
     }
 
