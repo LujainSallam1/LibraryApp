@@ -39,11 +39,11 @@ public class BookController {
 //    }
 
     @GetMapping("/books/{id}")
-    public ResponseEntity<Book> getById( @PathVariable(value = "id") Long id)  {
-        Optional<Book> book = bookRepository.findById(id);
+    public ResponseEntity<Cook> getById( @PathVariable(value = "id") Long id)  {
+        Optional<Cook> cook = cookRepository.findById(id);
 
-        if (book.isPresent()){
-            return ResponseEntity.ok(book.get());
+        if (cook.isPresent()){
+            return ResponseEntity.ok(cook.get());
         }
         else {
             //TODO: better response
@@ -52,13 +52,35 @@ public class BookController {
 
     }
 
-    @PostMapping("/books")
-    public Book add(@RequestBody Book book) {
+//    @GetMapping("/books/{id}")
+//    public ResponseEntity<Book> getById( @PathVariable(value = "id") Long id)  {
+//        Optional<Book> book = bookRepository.findById(id);
+//
+//        if (book.isPresent()){
+//            return ResponseEntity.ok(book.get());
+//        }
+//        else {
+//            //TODO: better response
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//    }
 
-        Book savedBook = bookRepository.save(book);
+    @PostMapping("/books")
+    public Cook add(@RequestBody Cook cook) {
+
+        Cook savedBook = cookRepository.save(cook);
 
         return savedBook;
     }
+
+//    @PostMapping("/books")
+//    public Book add(@RequestBody Book book) {
+//
+//        Book savedBook = bookRepository.save(book);
+//
+//        return savedBook;
+//    }
 
     @PutMapping("/books/{id}")
     public ResponseEntity<Book> update(@PathVariable(value = "id") Long id, @RequestBody Book body) {
