@@ -31,6 +31,8 @@ public class BluRay {
     @Column(name = "borrowed", columnDefinition = "boolean default false")
     private boolean borrowed;
 
+    public BluRay(){}
+
     public Long getId() {
         return id;
     }

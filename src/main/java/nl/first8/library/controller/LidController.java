@@ -1,10 +1,12 @@
 package nl.first8.library.controller;
 
 
+import nl.first8.library.domain.BluRay;
 import nl.first8.library.domain.Book;
 import nl.first8.library.domain.Lid;
 import nl.first8.library.repository.BookRepository;
 import nl.first8.library.repository.LidRepository;
+import nl.first8.library.repository.BluRayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,9 @@ public class LidController {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private BluRayRepository blurayRepository;
 
     @GetMapping("/leden")
     @ResponseBody
@@ -100,10 +105,11 @@ public class LidController {
         }
         Lid lid = findLid.get();
         Book book = findBook.get();
-        if (lid.getBorrowedBooks().size() >= lid.getMaxProducts()){
+        if (lid.getBorrowedBooks().size() + lid.getBorrowedBlurays().size() >= lid.getMaxProducts() && book.isBorrowed()){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         lid.addBook(book);
+        book.setBorrowed(true);
 
         return ResponseEntity.ok(lidRepository.save(lid));
     }
@@ -119,6 +125,41 @@ public class LidController {
         Book book = findBook.get();
 
         lid.removeBook(book);
+        book.setBorrowed(false);
+
+        return ResponseEntity.ok(lidRepository.save(lid));
+    }
+
+    @PutMapping("/leden/{id}/addbluray/{bluray_id}")
+    public ResponseEntity<Lid> borrowBluray(@PathVariable(value = "id") Long id, @PathVariable(value = "bluray_id") Long bluray_id){
+        Optional<Lid> findLid = lidRepository.findById(id);
+        Optional<BluRay> findBluray = blurayRepository.findById(bluray_id);
+        if (!findLid.isPresent() || !findBluray.isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        Lid lid = findLid.get();
+        BluRay bluray = findBluray.get();
+        if (lid.getBorrowedBooks().size() + lid.getBorrowedBlurays().size() >= lid.getMaxProducts() && bluray.isBorrowed()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        lid.addBluray(bluray);
+        bluray.setBorrowed(true);
+
+        return ResponseEntity.ok(lidRepository.save(lid));
+    }
+
+    @PutMapping("/leden/{id}/removebluray/{bluray_id}")
+    public ResponseEntity<Lid> removeBluray(@PathVariable(value = "id") Long id, @PathVariable(value = "bluray_id") Long bluray_id){
+        Optional<Lid> findLid = lidRepository.findById(id);
+        Optional<BluRay> findBluray = blurayRepository.findById(bluray_id);
+        if (!findLid.isPresent() || !findBluray.isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        Lid lid = findLid.get();
+        BluRay bluray = findBluray.get();
+
+        lid.addBluray(bluray);
+        bluray.setBorrowed(false);
 
         return ResponseEntity.ok(lidRepository.save(lid));
     }

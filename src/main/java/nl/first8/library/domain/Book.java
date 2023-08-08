@@ -33,8 +33,6 @@ public class Book {
 //    @JoinColumn(name = "lid_id", insertable = false, updatable = false)
 //    private Lid lid;
 
-
-
     public Book(){}
 
 //    public Book(String isbn, String title, String authors, LocalDate publishDate, boolean borrowed, String summary){

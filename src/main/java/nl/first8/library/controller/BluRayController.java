@@ -8,7 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -66,14 +67,12 @@ public class BluRayController {
     }
 
     @DeleteMapping("/blurays/{id}")
-    public Map<String, Boolean> delete(@PathVariable( value = "id") Long id) {
-        //TODO
-        Map<String, Boolean> map ;
+    public ResponseEntity<String> delete(@PathVariable( value = "id") Long id) {
         bluRayRepository.deleteBluRayById(id);
-        return null;
+        return ResponseEntity.ok("bluray deleted succesfully");
     }
 
-    @PutMapping("/bluray/{id}/borrow")
+    @PutMapping("/blurays/{id}/borrow")
     public ResponseEntity<BluRay> borrow(@PathVariable(value = "id") Long id) {
         //TODO
 

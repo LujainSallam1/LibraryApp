@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -66,11 +65,13 @@ public class BookController {
     }
 
     @DeleteMapping("/books/{isbn}")
-    public Map<String, Boolean> delete(@PathVariable( value = "isbn") String isbn) {
-        //TODO
-        Map<String, Boolean> map ;
-        bookRepository.deleteByIsbn(isbn);
-        return null;
+    public ResponseEntity<String> delete(@PathVariable( value = "isbn") String isbn) {
+        Book findBook = bookRepository.findByIsbn(isbn);
+        if (findBook != null){
+            bookRepository.deleteByIsbn(isbn);
+            return ResponseEntity.ok("book deleted succesfully");
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "book not found");
     }
 
     @PutMapping("/books/{id}/borrow")
