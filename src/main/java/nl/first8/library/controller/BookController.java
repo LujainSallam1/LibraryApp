@@ -2,8 +2,10 @@ package nl.first8.library.controller;
 
 import nl.first8.library.domain.Bluray;
 import nl.first8.library.domain.Book;
+import nl.first8.library.domain.Cook;
 import nl.first8.library.repository.BlurayRepository;
 import nl.first8.library.repository.BookRepository;
+import nl.first8.library.repository.CookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +25,18 @@ import java.util.*;
 public class BookController {
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private CookRepository cookRepository;
 
     @GetMapping("/books")
-    public List<Book> getAll() {
-        return this.bookRepository.findAll();
+    public List<Cook> getAll() {
+        return this.cookRepository.findAll();
     }
+
+//    @GetMapping("/books")
+//    public List<Book> getAll() {
+//        return this.bookRepository.findAll();
+//    }
 
     @GetMapping("/books/{id}")
     public ResponseEntity<Book> getById( @PathVariable(value = "id") Long id)  {
