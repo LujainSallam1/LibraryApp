@@ -3,7 +3,6 @@ package nl.first8.library.controller;
 import nl.first8.library.domain.Book;
 import nl.first8.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -26,47 +26,67 @@ public class BookController {
 
     @GetMapping("/books")
     public List<Book> getAll() {
-        return null; //TODO implement
+        return bookRepository.findAll();
     }
 
-    @GetMapping("/books/{id}")
-    public ResponseEntity<Book> getById( @PathVariable(value = "id") Long id) {
-        Book book = null; //TODO implement
+    @GetMapping("/books/{bookid}")
+    public ResponseEntity<Book> getById(@PathVariable(value = "bookid") Long bookid) {
+        Book book = bookRepository.findById(bookid).get();
         return ResponseEntity.ok(book);
     }
 
     @PostMapping("/books")
     public Book add(@RequestBody Book book) {
-        return null;
+        Book savedBook = bookRepository.save(book);
+        return savedBook;
     }
 
-    @PutMapping("/books/{id}")
-    public ResponseEntity<Book> update(@PathVariable(value = "id") Long id, @RequestBody Book book) {
-        //TODO
-        Book updatedBook = null;
+    @PutMapping("/books/{bookid}")
+    public ResponseEntity<Book> update(@PathVariable(value = "bookid") Long bookid, @RequestBody Book book) {
+        book.setId(bookid);
+        Book updatedBook = bookRepository.save(book);
         return ResponseEntity.ok(updatedBook);
     }
 
     @DeleteMapping("/books/{isbn}")
-    public Map<String, Boolean> delete(@PathVariable( value = "isbn") String isbn) {
-        //TODO
-        Map<String, Boolean> map = null;
-        return map;
+    public Map<String, Boolean> delete(@PathVariable(value = "isbn") String isbn) {
+        bookRepository.deleteByIsbn(isbn);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("deleted", true);
+        return response;
     }
 
-    @PutMapping("/books/{id}/borrow")
-    public ResponseEntity<Book> borrow(@PathVariable(value = "id") Long id) {
-        //TODO
-
-        Book updatedBook = null;
-        return ResponseEntity.ok(updatedBook);
+    @PutMapping("/books/{bookid}/borrow")
+    public ResponseEntity<Book> borrow(@PathVariable(value = "bookid") Long bookid) {
+        Optional<Book> optionalBook = bookRepository.findById(bookid);
+        if (optionalBook.isPresent()) {
+            Book book = optionalBook.get();
+            if (book.isBorrowed()) {
+                return ResponseEntity.notFound().build(); // POSSIBLE BETTER ERROR HANDLING, SINCE IT IS ACTUALLY FOUND, JUST NOT AVAILABLE
+            }
+            book.setBorrowed(true);
+            Book updatedBook = bookRepository.save(book);
+            return ResponseEntity.ok(updatedBook);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PutMapping("/books/{id}/handin")
-    public ResponseEntity<Book> handin(@PathVariable(value = "id") Long id) {
-        //TODO
-
-        Book updatedBook = null;
-        return ResponseEntity.ok(updatedBook);
+        @PutMapping("/books/{bookid}/handin")
+        public ResponseEntity<Book> handin (@PathVariable(value = "bookid") Long bookid){
+            Optional<Book> optionalBook = bookRepository.findById(bookid);
+            if (optionalBook.isPresent()) {
+                Book book = optionalBook.get();
+                if (book.isBorrowed()) {
+                    book.setBorrowed(false);
+                    Book updatedBook = bookRepository.save(book);
+                    return ResponseEntity.ok(updatedBook);
+                }
+                else{
+                    return ResponseEntity.notFound().build(); // POSSIBLE BETTER ERROR HANDLING, SINCE IT IS ACTUALLY FOUND, JUST NOT BORROWED YET
+                }
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        }
     }
-}

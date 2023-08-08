@@ -10,24 +10,24 @@ import javax.persistence.Table;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "book")
-@SequenceGenerator(name="book_id_seq", initialValue=11, allocationSize=1000)
-public class Book {
+@Table(name = "bluray")
+@SequenceGenerator(name="bluray_id_seq", initialValue=11, allocationSize=1000)
+public class BluRay {
     @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="book_id_seq")
-    private Long bookid;
-
-    @Column(name = "isbn", nullable = false)
-    private String isbn;
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="bluray_id_seq")
+    private Long blurayid;
 
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "authors", nullable = false)
-    private String authors;
+    @Column(name = "directors", nullable = false)
+    private String directors;
 
-    @Column(name = "publish_date", nullable = false)
-    private LocalDate publishDate;
+    @Column(name = "actors", nullable = false)
+    private String actors;
+
+    @Column(name = "release_date", nullable = false)
+    private LocalDate releaseDate;
 
     @Column(name = "borrowed", columnDefinition = "boolean default false")
     private boolean borrowed;
@@ -36,19 +36,11 @@ public class Book {
     private String summary;
 
     public Long getId() {
-        return bookid;
+        return blurayid;
     }
 
-    public void setId( Long bookid ) {
-        this.bookid = bookid;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn( String isbn ) {
-        this.isbn = isbn;
+    public void setId( Long blurayid ) {
+        this.blurayid = blurayid;
     }
 
     public String getTitle() {
@@ -59,20 +51,24 @@ public class Book {
         this.title = title;
     }
 
-    public String getAuthors() {
-        return authors;
+    public String getDirectors() {
+        return directors;
     }
 
-    public void setAuthors( String authors ) {
-        this.authors = authors;
+    public void setDirectors( String directors ) { this.directors = directors; }
+
+    public String getActors() {
+        return actors;
     }
 
-    public LocalDate getPublishDate() {
-        return publishDate;
+    public void setActors( String actors ) { this.actors = actors; }
+
+    public LocalDate getReleaseDate() {
+        return releaseDate;
     }
 
-    public void setPublishDate( LocalDate publishdDate ) {
-        this.publishDate = publishdDate;
+    public void setPublishDate( LocalDate ReleaseDate ) {
+        this.releaseDate = releaseDate;
     }
 
     public boolean isBorrowed() {
@@ -86,5 +82,4 @@ public class Book {
     public String getSummary() {return summary; }
 
     public void setSummary() { this.summary = summary; }
-
 }
