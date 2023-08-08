@@ -69,6 +69,14 @@ public class Members {
         this.bluray = bluray;
     }
 
+    public Set<ComicBook> getComicBook() {
+        return comicBook;
+    }
+
+    public void setComicBook(Set<ComicBook> comicBook) {
+        this.comicBook = comicBook;
+    }
+
     public String getName() {
         return name;
     }

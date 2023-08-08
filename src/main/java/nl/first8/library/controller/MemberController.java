@@ -114,8 +114,9 @@ public class MemberController {
     Long id_book) {
         Optional<Members> memberoud = memberRepository.findById(id);
         Optional<Book> book = bookRepository.findById(id_book);
-        if (!memberoud.isPresent() && !book.isPresent()) {
-            return null;
+
+        if ((!memberoud.isPresent() && !book.isPresent()) || memberoud.get().getActive() == false) {
+            return ResponseEntity.ok("Lid of book bestaat niet of lid heeft geen toegang!");
         }
         Members updateMember = memberoud.get();
         Book infoBook = book.get();
@@ -148,8 +149,8 @@ public class MemberController {
     Long id_bluray) {
         Optional<Members> memberoud = memberRepository.findById(id);
         Optional<BluRay> bluRay = blurayRepository.findById(id_bluray);
-        if (!memberoud.isPresent() && !bluRay.isPresent()) {
-            return null;
+        if ((!memberoud.isPresent() && !bluRay.isPresent()) || memberoud.get().getActive() == false) {
+            return ResponseEntity.ok("Lid of book bestaat niet of lid heeft geen toegang!");
         }
         Members updateMember = memberoud.get();
         BluRay infoBluray = bluRay.get();
@@ -176,4 +177,48 @@ public class MemberController {
             }
         }
     }
-}
+
+    @PutMapping("/member/{id}/borrow_comicbook/{id_comicbook}")
+    public ResponseEntity<String> lenencomicbook (@PathVariable(value = "id") Long id, @PathVariable(value = "id_comicbook")
+    Long id_comicbook) {
+        Optional<Members> memberoud = memberRepository.findById(id);
+        Optional<ComicBook> comicBook = comicBookRepository.findById(id_comicbook);
+        if ((!memberoud.isPresent() && !comicBook.isPresent()) || memberoud.get().getActive() == false || comicBook.get().isBorrowed()) {
+            return ResponseEntity.ok("Lid of book bestaat niet of lid heeft geen toegang of boek is al uitgeleend!");
+        }
+
+        Members updateMember = memberoud.get();
+        ComicBook infoComicBook = comicBook.get();
+        int now = updateMember.getProducts();
+        updateMember.getComicBook().add(infoComicBook);
+
+        if (now == 0){
+            return ResponseEntity.ok("Zijn al te veel items geleend");
+        } else {
+            updateMember.setProducts(updateMember.getProducts() - 1);
+            memberRepository.save(updateMember);
+            infoComicBook.setBorrowed(true);
+            comicBookRepository.save(infoComicBook);
+            return ResponseEntity.ok("gelukt om een item te huren");
+        }
+    }
+
+    @PutMapping("/member/{id}/return_comicbook/{id_comicbook}")
+    public ResponseEntity<String> returncomicbook (@PathVariable(value = "id") Long id, @PathVariable(value = "id_comicbook")
+    Long id_comicbook) {
+        Optional<Members> memberoud = memberRepository.findById(id);
+        Optional<ComicBook> comicBook = comicBookRepository.findById(id_comicbook);
+        if ((!memberoud.isPresent() && !comicBook.isPresent()) || memberoud.get().getActive() == false || !comicBook.get().isBorrowed()) {
+            return ResponseEntity.ok("Lid of book bestaat niet of lid heeft geen toegang of boek is al uitgeleend!");
+        }
+        Members updateMember = memberoud.get();
+        ComicBook infoComicBook = comicBook.get();
+
+        updateMember.getComicBook().remove(infoComicBook);
+        updateMember.setProducts(updateMember.getProducts() + 1);
+        memberRepository.save(updateMember);
+        infoComicBook.setBorrowed(false);
+        comicBookRepository.save(infoComicBook);
+        return ResponseEntity.ok("gelukt om een item terug te brengen");
+        }
+    }

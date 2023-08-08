@@ -1,6 +1,5 @@
 package nl.first8.library.controller;
 
-import nl.first8.library.domain.BluRay;
 import nl.first8.library.domain.ComicBook;
 import nl.first8.library.repository.ComicBookRepository;
 import org.apache.coyote.Response;
@@ -42,34 +41,34 @@ public class ComicBookController {
         return ResponseEntity.ok(createComicBook);
     }
 
-//    @PutMapping("/bluray/{id}")
-//    public ResponseEntity<BluRay> update(@PathVariable(value = "id") Long id, @RequestBody BluRay bluray) {
-//        Optional<BluRay> blurayoud = blurayRepository.findById(id);
-//        if (!blurayoud.isPresent()) {
-//            return null;
-//        }
-//        BluRay updateBluray = blurayoud.get();
-//
-//        if (bluray.getTitle() != null) {
-//            updateBluray.setTitle(bluray.getTitle());
-//        }
-//
-//        if (bluray.getActor() != null) {
-//            updateBluray.setActor(bluray.getActor());
-//        }
-//
-//        if (bluray.getPublishDate() != null) {
-//            updateBluray.setPublishDate(bluray.getPublishDate());
-//        }
-//
-//        updateBluray.setBorrowed(bluray.isBorrowed());
-//
-//        if (bluray.getSummary() != null) {
-//            updateBluray.setSummary(bluray.getSummary());
-//        }
-//
-//        return ResponseEntity.ok( blurayRepository.save(updateBluray));
-//    }
+    @PutMapping("/comicbook/{id}")
+    public ResponseEntity<ComicBook> update(@PathVariable(value = "id") Long id, @RequestBody ComicBook comicBook) {
+        Optional<ComicBook> comicBookoud = comicBookRepository.findById(id);
+        if (!comicBookoud.isPresent()) {
+            return null;
+        }
+        ComicBook updateComicBook = comicBookoud.get();
+
+        if (comicBook.getTitle() != null) {
+            updateComicBook.setTitle(comicBook.getTitle());
+        }
+
+        if (comicBook.getAuthors() != null) {
+            updateComicBook.setAuthors(comicBook.getAuthors());
+        }
+
+        if (comicBook.getPublishDate() != null) {
+            updateComicBook.setPublishDate(comicBook.getPublishDate());
+        }
+
+        updateComicBook.setBorrowed(comicBook.isBorrowed());
+
+        if (comicBook.getSummary() != null) {
+            updateComicBook.setSummary(comicBook.getSummary());
+        }
+
+        return ResponseEntity.ok( comicBookRepository.save(updateComicBook));
+    }
 
     @DeleteMapping("/comicbook/{id}")
     public ResponseEntity<String> delete(@PathVariable( value = "id") Long id) {
@@ -92,6 +91,4 @@ public class ComicBookController {
         }
         return ResponseEntity.ok( comicBookRepository.save(updateComicBook));
     }
-
-
 }
