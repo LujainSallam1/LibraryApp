@@ -1,20 +1,14 @@
 package nl.first8.library.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "book")
-@SequenceGenerator(name="book_id_seq", initialValue=11, allocationSize=1000)
-public class Book {
+@Table(name = "stripBook")
+@SequenceGenerator(name="strip_book_id_seq", initialValue=11, allocationSize=1000)
+public class StripBook {
     @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="book_id_seq")
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="strip_book_id_seq")
     private Long id;
 
     @Column(name = "isbn", nullable = false)
@@ -40,7 +34,6 @@ public class Book {
     @Column(name = "borrowerId")
     private Long borrowerId;
 
-    //7. Pas `Book.java` aan zodat een boek voorzien kan worden van een samenvatting (summary).
     @Column(name = "summary")
     private String summary;
 

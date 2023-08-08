@@ -10,21 +10,18 @@ import javax.persistence.Table;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "book")
-@SequenceGenerator(name="book_id_seq", initialValue=11, allocationSize=1000)
-public class Book {
+@Table(name = "bluray")
+@SequenceGenerator(name="bluray_id_seq", initialValue=11, allocationSize=1000)
+public class Bluray {
     @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="book_id_seq")
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="bluray_id_seq")
     private Long id;
-
-    @Column(name = "isbn", nullable = false)
-    private String isbn;
 
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "authors", nullable = false)
-    private String authors;
+    @Column(name = "director", nullable = false)
+    private String director;
 
     @Column(name = "publish_date", nullable = false)
     private LocalDate publishDate;
@@ -32,7 +29,9 @@ public class Book {
     @Column(name = "borrowed", columnDefinition = "boolean default false")
     private boolean borrowed;
 
-    @Column
+    @Column(name = "summary")
+    private String summary;
+
     public Long getBorrowerId() {
         return borrowerId;
     }
@@ -40,27 +39,8 @@ public class Book {
     @Column(name = "borrowerId")
     private Long borrowerId;
 
-    //7. Pas `Book.java` aan zodat een boek voorzien kan worden van een samenvatting (summary).
-    @Column(name = "summary")
-    private String summary;
-
-    public void setBorrowerId(Long borrowerId) {
-        this.borrowerId = borrowerId;
-    }
     public Long getId() {
         return id;
-    }
-
-    public void setId( Long id ) {
-        this.id = id;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn( String isbn ) {
-        this.isbn = isbn;
     }
 
     public String getTitle() {
@@ -71,12 +51,12 @@ public class Book {
         this.title = title;
     }
 
-    public String getAuthors() {
-        return authors;
+    public String getDirector() {
+        return director;
     }
 
-    public void setAuthors( String authors ) {
-        this.authors = authors;
+    public void setDirector( String director ) {
+        this.director = director;
     }
 
     public LocalDate getPublishDate() {
@@ -97,5 +77,9 @@ public class Book {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public void setBorrowerId(Long id) {
+
     }
 }
