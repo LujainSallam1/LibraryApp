@@ -75,8 +75,9 @@ public class MemberController {
             //TODO: better response
             return ResponseEntity.notFound().build();
         }
-
-        member.setDisabled(true);
+        else {
+            member.setDisabled(true);
+        }
 
         Member updatedMember = memberRepository.save(member);
         return ResponseEntity.ok(updatedMember);

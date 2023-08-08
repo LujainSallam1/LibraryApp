@@ -76,12 +76,10 @@ public class BookController {
 
     @DeleteMapping("/books/{isbn}")
     public Map<String, Boolean> delete(@PathVariable( value = "isbn") String isbn) {
-        //TODO
         List<Book> booksWithIsbn = bookRepository.findByIsbn(isbn);
         Map<String, Boolean> map = new HashMap<>();
 
-        for(int i=0 ; i<booksWithIsbn.size(); i++){
-            Book book = booksWithIsbn.get(i);
+        for(Book book : booksWithIsbn){
             Long id = book.getId();
             bookRepository.deleteById(id);
             Boolean hasBeenDeleted = ! bookRepository.findById(id).isPresent();
@@ -94,12 +92,13 @@ public class BookController {
     @PutMapping("/books/{id}/borrow")
     public ResponseEntity<Book> borrow(@PathVariable(value = "id") Long id) {
         Book book = bookRepository.getById(id);
+
         if(book.isBorrowed()){
             //TODO: better response
             return ResponseEntity.notFound().build();
+        } else {
+            book.setBorrowed(true);
         }
-
-        book.setBorrowed(true);
 
         Book updatedBook = bookRepository.save(book);
         return ResponseEntity.ok(updatedBook);
