@@ -1,14 +1,12 @@
 package nl.first8.library.domain;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "lid")
-@SequenceGenerator(name="leden_id_seq", initialValue=11, allocationSize=1000)
-public class Leden {
+@Table(name = "member")
+@SequenceGenerator(name="members_id_seq", initialValue=11, allocationSize=1000)
+public class Member {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Book> borrowedbooks;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -64,7 +62,7 @@ public class Leden {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lid_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_id_seq")
     private Long id;
 
     @Column(name = "naam", nullable = false)

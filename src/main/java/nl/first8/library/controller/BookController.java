@@ -40,17 +40,6 @@ public class BookController {
 
     }
 
-//    @GetMapping("/books/{sbn}")
-//    public ResponseEntity<Book> getByIsbn(@PathVariable String isbn) {
-//        Optional<Book> optionalBook = bookRepository.findByIsbn(isbn);
-//        if (optionalBook.isPresent()) {
-//            Book book = optionalBook.get();
-//            return ResponseEntity.ok(book);
-//        } else
-//            return ResponseEntity.notFound().build();
-//
-//    }
-
     @PostMapping("/books")
     public ResponseEntity<Book> add(@RequestBody Book book) {
         Book savedbook = bookRepository.save(book);
