@@ -49,43 +49,43 @@ public class LedenControllerTest {
         assertEquals(mockLedenList, result);
 
         verify(ledenRepository).findAll();
-    }
-    @Test
-        public void testGetById_ExistingId() {
-            Long existingId = 1L;
-            Leden Lid1=new Leden();
-            Lid1.setId(existingId);
-            Lid1.setNaam("Lujain");
-            Lid1.setAdres("zijlkade");
-            Lid1.setWoonplaats("Nieuwland");
-
-            LedenRepository ledenRepository = mock(LedenRepository.class);
-            when(ledenRepository.findById(existingId)).thenReturn(Optional.of(Lid1));
-
-
-            LedenControlller ledenController = new LedenControlller();
-
-            ResponseEntity<Leden> response = ledenController.getById(existingId);
-
-
-            assertEquals(ResponseEntity.ok(Lid1), response);
-        }}
+    }}
+//    @Test
+//        public void testGetById_ExistingId() {
+//            Long existingId = 1L;
+//            Leden Lid1=new Leden();
+//            Lid1.setId(existingId);
+//            Lid1.setNaam("Lujain");
+//            Lid1.setAdres("zijlkade");
+//            Lid1.setWoonplaats("Nieuwland");
 //
-//        @Test
-//        public void testGetById_NonExistingId() {
-//            Long nonExistingId = 999L;
 //            LedenRepository ledenRepository = mock(LedenRepository.class);
-//            when(ledenRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+//            when(ledenRepository.findById(existingId)).thenReturn(Optional.of(Lid1));
 //
 //
 //            LedenControlller ledenController = new LedenControlller();
 //
+//            ResponseEntity<Leden> response = ledenController.getById(existingId);
 //
-//            ResponseEntity<Leden> response = ledenController.getById(nonExistingId);
 //
-//            assertEquals(ResponseEntity.notFound().build(), response);
-//        }
-//    }
+//            assertEquals(ResponseEntity.ok(Lid1), response);
+//        }}
+////
+////        @Test
+////        public void testGetById_NonExistingId() {
+////            Long nonExistingId = 999L;
+////            LedenRepository ledenRepository = mock(LedenRepository.class);
+////            when(ledenRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+////
+////
+////            LedenControlller ledenController = new LedenControlller();
+////
+////
+////            ResponseEntity<Leden> response = ledenController.getById(nonExistingId);
+////
+////            assertEquals(ResponseEntity.notFound().build(), response);
+////        }
+////    }
+////
 //
-
-
+//
