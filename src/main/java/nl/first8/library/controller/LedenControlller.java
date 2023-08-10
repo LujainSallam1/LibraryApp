@@ -10,11 +10,8 @@ import nl.first8.library.repository.LedenRepository;
 import nl.first8.library.repository.StriobookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
 import java.util.List;
 import java.util.Optional;
-
-
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,16 +32,7 @@ public class LedenControlller {
         return ledenRepository.findAll();
     }
 
-    @GetMapping("/leden/{id}")
-    public ResponseEntity<Leden> getById(@PathVariable Long id) {
-        Optional<Leden> optionallid = ledenRepository.findById(id);
-        if (optionallid.isPresent()) {
-            Leden lid = optionallid.get();
-            return ResponseEntity.ok(lid);
-        } else
-            return ResponseEntity.notFound().build();
-
-    }
+    
 
     @PostMapping("/leden")
     public ResponseEntity<Leden> add(@RequestBody Leden lid) {
@@ -130,7 +118,7 @@ public class LedenControlller {
             Leden lid = optionallid.get();
             {
                 if (!bluerays.isBorrowed()) {
-                    if (lid.getBorrowedbooks().size() < lid.getMaxLeenbaarProducten()) {
+                    if (lid.getBorrowedbooks().size() +lid.getBorrowedbluerays().size() < lid.getMaxLeenbaarProducten()) {
 
                         bluerays.setBorrowed(true);
                         blueraysRepository.save(bluerays);
@@ -138,16 +126,16 @@ public class LedenControlller {
 
                         ledenRepository.save(lid);
                     } else {
-                        System.out.println("You cant borrow more books");
+                        System.out.println("You cant borrow more");
                     }
                 } else {
-                    System.out.println("Book is already borrowed");
+                    System.out.println("is already borrowed");
 
                 }
             }
 
         } else {
-            System.out.println("no book with this id");
+            System.out.println("no bluray with this id");
         }
 
     }
@@ -160,11 +148,11 @@ public class LedenControlller {
             Leden lid = optionallid.get();
             {
                 if (!stripbook.isBorrowed()) {
-                    if(lid.getBorrowedbooks().size() < lid.getMaxLeenbaarProducten()){
+                    if(lid.getBorrowedbooks().size()+lid.getBorrowedbluerays().size()+lid.getBorrowedstripbooks().size() < lid.getMaxLeenbaarProducten()){
 
                         stripbook.setBorrowed(true);
                         striobookRepository.save(stripbook);
-                        lid.ge().add(stripbook);
+                        lid.getStripbooks().add(stripbook);
 
                         ledenRepository.save(lid);
                     }else {

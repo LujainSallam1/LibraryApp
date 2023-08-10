@@ -2,7 +2,7 @@ package nl.first8.library.domain;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Set;
+
 
 @Entity
 @Table(name = "book")
@@ -20,7 +20,7 @@ public class Book {
     private String title;
 
     @Column(name = "authors", nullable = false)
-    private String authors;
+   private  String authors;
 
     @Column(name = "publish_date", nullable = false)
     private LocalDate publishDate;
@@ -30,6 +30,7 @@ public class Book {
 
     @Column(name = "summary")
     private String summary;
+
 
 
     public String getSummary() {

@@ -12,8 +12,8 @@ VALUES ('1', '9780446310789', 'To Kill a Mockingbird', 'Harper Lee', '1960-07-11
 
 INSERT INTO lid (id, naam, adres, woonplaats)
 VALUES ('1', 'Chezley', 'Epsilonplantsoen', 'Leiden'),
-       ('2', 'Lujain', 'Haven', 'Leiden'),
-       ('3', 'Laurinde', 'Omegaplantsoen', 'Leiden'),
+       ('2', 'Lujain', 'Haven', 'Leiden' ),
+       ('3', 'Laurinde', 'Omegaplantsoen' , 'Leiden' ),
        ('4', 'Lieke', 'Deltaweg', 'Leiden');
 INSERT INTO Bluerays (id, title, director, publish_date, borrowed, genre)
 VALUES
