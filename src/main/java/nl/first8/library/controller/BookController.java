@@ -65,18 +65,16 @@ public class BookController {
         }
     }
 
-    @DeleteMapping("/books/{isbn}")
-    public ResponseEntity<Book> delet(@PathVariable String isbn) {
-        Optional<Book> optionalBook = bookRepository.findByIsbn((isbn));
-        if (optionalBook.isPresent()) {
-            bookRepository.deleteByIsbn(isbn);
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-
-
-    }
+//    @DeleteMapping("/books/{isbn}")
+//    public ResponseEntity<Book> delet(@PathVariable String isbn) {
+//        Optional<Book> optionalBook = bookRepository.findByIsbn((isbn));
+//        if (optionalBook.isPresent()) {
+//            bookRepository.deleteByIsbn(isbn);
+//            return ResponseEntity.ok().build();
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
     @PutMapping("/books/{id}/borrow")
     public boolean borrow(@PathVariable(value = "id") Long id) {
