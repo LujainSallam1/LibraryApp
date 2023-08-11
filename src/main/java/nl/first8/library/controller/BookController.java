@@ -1,6 +1,7 @@
 package nl.first8.library.controller;
 
 import nl.first8.library.domain.Book;
+import nl.first8.library.domain.Member;
 import nl.first8.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -73,28 +74,31 @@ public class BookController {
 //            return ResponseEntity.notFound().build();
 //        }
 //    }
-
-    @PutMapping("/books/{id}/borrow")
-    public boolean borrow(@PathVariable(value = "id") Long id) {
+@PutMapping("/books/{id}/borrow")
+public boolean borrow(@PathVariable(value = "id") Long id) {
+    Optional<Book> optionalBook = bookRepository.findById(id);
+    if (optionalBook.isPresent()) {
+        Book book = optionalBook.get();
+        if (!book.isBorrowed())
+            book.setBorrowed(true);
+        bookRepository.save(book);
+        return true;
+    }
+    return false;
+}
+    @PutMapping("/books/{id}/handin")
+    public boolean handin(@PathVariable(value = "id") Long id) {
         Optional<Book> optionalBook = bookRepository.findById(id);
         if (optionalBook.isPresent()) {
             Book book = optionalBook.get();
-
-            if (!book.isBorrowed()) {
-                book.setBorrowed(true);
-                bookRepository.save(book);
-                return true;
-
-            } else {
-                if (book.isBorrowed()) {
-                    book.setBorrowed(false);
-                    bookRepository.save(book);
-                    return true;
-                }
-            }
+            if (book.isBorrowed())
+                book.setBorrowed(false);
+            bookRepository.save(book);
         }
-        return false;
+        return true;
     }
+
+
 }
 
 
