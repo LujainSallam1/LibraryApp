@@ -9,49 +9,6 @@ import java.util.Set;
 public class Member {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Book> borrowedbooks;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Stripbook> borrowedstripbooks;
-
-    public Set<Stripbook> getBorrowedstripbooks() {
-        return borrowedstripbooks;
-    }
-
-    public void setBorrowedstripbooks(Set<Stripbook> borrowedstripbooks) {
-        this.borrowedstripbooks = borrowedstripbooks;
-    }
-
-    public Set<Bluerays> getBorrowedbluerays() {
-        return borrowedbluerays;
-    }
-
-    public void setBorrowedbluerays(Set<Bluerays> borrowedbluerays) {
-        this.borrowedbluerays = borrowedbluerays;
-    }
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Bluerays> borrowedbluerays;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Bluerays> Blueraysbooks;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Stripbook> stripbooks;
-
-    public Set<Stripbook> getStripbooks() {
-        return stripbooks;
-    }
-
-    public void setStripbooks(Set<Stripbook> stripbooks) {
-        this.stripbooks = stripbooks;
-    }
-
-    public Set<Bluerays> getBlueraysbooks() {
-        return Blueraysbooks;
-    }
-
-    public void setBlueraysbooks(Set<Bluerays> blueraysbooks) {
-        Blueraysbooks = blueraysbooks;
-    }
 
     public Set<Book> getBorrowedbooks() {
         return borrowedbooks;
