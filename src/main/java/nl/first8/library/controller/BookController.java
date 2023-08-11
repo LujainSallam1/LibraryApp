@@ -3,6 +3,8 @@ package nl.first8.library.controller;
 import nl.first8.library.domain.Book;
 import nl.first8.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,11 +13,10 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(path = "/api/v1", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE })
 public class BookController {
     @Autowired
     private BookRepository bookRepository;
-
 
     @GetMapping("/books")
     public List<Book> getAll(@RequestParam(required=false) String isbn) {
