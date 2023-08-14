@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.Column;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -67,6 +68,18 @@ public class BookController {
 
         Book updatedBook = bookRepository.save(bookDB);
         return ResponseEntity.ok(updatedBook);
+    }
+    @PostMapping("/books/upload-barcode")
+    public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload) {
+        String barcodeInfo = payload.get("barcode_info");
+        if (barcodeInfo != null) {
+            System.out.println("is gelukt");
+            System.out.println(payload);
+            return ResponseEntity.ok("Barcode info received successfully")
+                    ;
+        } else {
+            return ResponseEntity.badRequest().body("Barcode info is missing");
+        }
     }
 
 //    @DeleteMapping("/books/{isbn}")
