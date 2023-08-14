@@ -70,18 +70,43 @@ public class BookController {
         return ResponseEntity.ok(updatedBook);
     }
     @PostMapping("/books/upload-barcode")
-    public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload ) {
         String barcodeInfo = payload.get("barcode_info");
-        if (barcodeInfo != null) {
-            System.out.println("is gelukt");
-            System.out.println(payload);
-            return ResponseEntity.ok("Barcode info received successfully")
-                    ;
-        } else {
-            return ResponseEntity.badRequest().body("Barcode info is missing");
-        }
+        String userid= payload.get("user_id");
+        return null;
     }
-
+//        if (barcodeInfo != null && userid != null ) {
+//            List<Book> optionalBook = bookRepository.findByIsbn(barcodeInfo);
+//
+//            if (!optionalBook.isEmpty()) {
+//                Book book = optionalBook.get(0);
+//                if (book.isBorrowed()) {
+//                    if (book.getOutcheckDate() == null) {
+//                        book.setOutcheckDate(LocalDate.now());
+//                        book.setBorrowed(false);
+//                        bookRepository.save(book);
+//                        System.out.println("Book returned successfully");
+//                        return ResponseEntity.ok("Book returned successfully");
+//
+//                    } else {
+//                         return ResponseEntity.notFound().build();
+//                    }
+//                } else {
+//                    // الكتاب غير مستعار، يجب إجراء إعارة
+//                    book.setBorrowed(true);
+//                    book.setIncheckDate(LocalDate.now());
+//                    bookRepository.save(book);
+//                    System.out.println("Book borrowed successfully");
+//                    return ResponseEntity.ok("Book borrowed successfully");
+//                }
+//            } else {
+//                return ResponseEntity.notFound().build();
+//
+//            }
+//        } else {
+//            return ResponseEntity.badRequest().body("Barcode info or user ID is missing");
+//        }
+//    }
 //    @DeleteMapping("/books/{isbn}")
 //    public ResponseEntity<Book> delet(@PathVariable String isbn) {
 //        Optional<Book> optionalBook = bookRepository.findByIsbn((isbn));
