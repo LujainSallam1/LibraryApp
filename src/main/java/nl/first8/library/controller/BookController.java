@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @RestController
-@RequestMapping(path = "/api/v1", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE })
+@RequestMapping(path = "/api/v1")//, produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE })
 public class BookController {
     @Autowired
     private BookRepository bookRepository;
@@ -58,7 +58,9 @@ public class BookController {
     public ResponseEntity<Book> add(@RequestBody Book book) {
         Book savedbook = bookRepository.save(book);
         return ResponseEntity.ok(savedbook);
-    }@PutMapping("/books/{id}")
+    }
+
+    @PutMapping("/books/{id}")
     public ResponseEntity<Book> update(@PathVariable(value = "id") Long id, @RequestBody Book body) {
         Optional<Book> bookOptional = bookRepository.findById(id);
         Book bookDB;

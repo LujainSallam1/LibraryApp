@@ -30,35 +30,14 @@ public class MemberController {
         return memberRepository.findAll();
     }
 
-    
+
 
     @PostMapping("/members")
     public ResponseEntity<Member> add(@RequestBody Member member) {
         Member savedmember = memberRepository.save(member);
         return ResponseEntity.ok(savedmember);
     }
-    @PutMapping("/books/{id}")
-    public ResponseEntity<Member> update(@PathVariable(value = "id") Long id, @RequestBody Member member) {
-        Optional<Member> memberOptional = memberRepository.findById(id);
-        Member memberdb;
 
-        if (memberOptional.isPresent()){
-            memberdb = memberOptional.get();
-
-            if (Objects.nonNull(member.getNaam()))              memberdb.setNaam(member.getNaam());
-            if (Objects.nonNull(member.getAdres()))             memberdb.setAdres(member.getAdres());
-            if (Objects.nonNull(member.getWoonplaats()))        memberdb.setWoonplaats(member.getWoonplaats());
-            if (Objects.nonNull(member.getId()))                memberdb.setId(member.getId());
-            if (Objects.nonNull(member.getBorrowedbooks()))     memberdb.setBorrowedbooks(member.getBorrowedbooks());
-
-        }
-        else {
-            return ResponseEntity.notFound().build();
-        }
-
-        Member updatedMember = memberRepository.save(memberdb);
-        return ResponseEntity.ok(updatedMember);
-    }
 //    @PutMapping("/members/{id}")
 //    public ResponseEntity<Member> update(@PathVariable(value = "id") Long id, @RequestBody Member member) {
 //        Optional<Member> optionalMember = memberRepository.findById(id);
@@ -111,9 +90,18 @@ public class MemberController {
                     if(member.getBorrowedbooks().size() < member.getMaxLeenbaarProducten()){
 
                     book.setBorrowed(true);
+                    book.setBorrowedBy(member);
                     book.setIncheckDate(LocalDate.now());
                     bookRepository.save(book);
-                    member.getBorrowedbooks().add(book);
+                    member.getBorrowedbooks().add(book); //TODO in book.setBorrowedBy
+
+                    //Test print start
+                    System.out.println("Borrowed books: ");
+                    for(Book borrowedBook : member.getBorrowedbooks()){
+                        System.out.println(borrowedBook.getId());
+                    }
+                    //Test print end
+
                     memberRepository.save(member);
                     }else {
                         System.out.println("You cant borrow more books");

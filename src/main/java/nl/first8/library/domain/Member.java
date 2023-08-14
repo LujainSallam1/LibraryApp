@@ -3,20 +3,15 @@ package nl.first8.library.domain;
 import javax.persistence.*;
 import java.util.Set;
 
+import net.minidev.json.annotate.JsonIgnore;
+import nl.first8.library.domain.Book;
+
 @Entity
 @Table(name = "member")
 @SequenceGenerator(name="members_id_seq", initialValue=11, allocationSize=1000)
 public class Member {
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "borrowedBy")
     private Set<Book> borrowedbooks;
-
-    public Set<Book> getBorrowedbooks() {
-        return borrowedbooks;
-    }
-
-    public void setBorrowedbooks(Set<Book> borrowedbooks) {
-        this.borrowedbooks = borrowedbooks;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_id_seq")
@@ -86,5 +81,14 @@ public class Member {
     public boolean isdisable() {
         return disable;
     }
+
+    public Set<Book> getBorrowedbooks() {
+        return borrowedbooks;
+    }
+
+    public void setBorrowedbooks(Set<Book> borrowedbooks) {
+        this.borrowedbooks = borrowedbooks;
+    }
+
 
 }

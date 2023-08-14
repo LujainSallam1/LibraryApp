@@ -2,12 +2,17 @@ package nl.first8.library.domain;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import nl.first8.library.domain.Member;
 
 
 @Entity
 @Table(name = "book")
 @SequenceGenerator(name="book_id_seq", initialValue=11, allocationSize=1000)
 public class Book {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member borrowedBy;
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="book_id_seq")
@@ -106,5 +111,13 @@ public class Book {
 
     public void setBorrowed( boolean borrowed ) {
         this.borrowed = borrowed;
+    }
+
+    public Member getBorrowedBy() {
+        return borrowedBy;
+    }
+
+    public void setBorrowedBy(Member borrowedBy) {
+        this.borrowedBy = borrowedBy;
     }
 }
