@@ -2,6 +2,7 @@ package nl.first8.library.domain;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Date;
 
 
 @Entity
@@ -22,8 +23,8 @@ public class Book {
     @Column(name = "authors", nullable = false)
    private  String authors;
 
-    @Column(name = "publish_date", nullable = false)
-    private LocalDate publishDate;
+    @Column(name = "publish_date")
+    private Date publishDate;
 
     @Column(name = "borrowed", columnDefinition = "boolean default false")
     private boolean borrowed;
@@ -92,11 +93,11 @@ public class Book {
         this.authors = authors;
     }
 
-    public LocalDate getPublishDate() {
+    public Date getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate( LocalDate publishdDate ) {
+    public void setPublishDate(Date publishdDate ) {
         this.publishDate = publishdDate;
     }
 

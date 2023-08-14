@@ -1,26 +1,47 @@
 package nl.first8.library.controller;
 
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.first8.library.domain.Book;
+import nl.first8.library.domain.GoogleBookApiResponse;
 import nl.first8.library.domain.Member;
 import nl.first8.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.client.RestTemplate;
 import javax.persistence.Column;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping(path = "/api/v1", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE })
 public class BookController {
     @Autowired
-    private BookRepository bookRepository;
+    public BookController(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+  @Autowired
+   private RestTemplate restTemplate;
+   @Value("${google.books.api.key}")
+   private String googleBooksApiKey;
+   @Autowired
+   private BookRepository bookRepository;
+   @Autowired
+   private ObjectMapper objectMapper;
 
     @GetMapping("/books")
     public List<Book> getAll(@RequestParam(required=false) String isbn) {
@@ -31,6 +52,49 @@ public class BookController {
             return bookRepository.findAll();
         }
     }
+
+//    @GetMapping("/books/search")
+//    public ResponseEntity<String> searchBooksByIsbn(@RequestParam String isbn) {
+//        // تكوين URL للبحث باستخدام رقم ISBN في Google Books API
+//        String apiUrl = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn + "&key=" + googleBooksApiKey;
+//
+//        // إرسال طلب GET إلى Google Books API باستخدام RestTemplate
+//        ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
+//
+//        // إرجاع الاستجابة من Google Books API
+//        return response;
+//    }
+@GetMapping("/search-books")
+public ResponseEntity<String> searchBooks(@RequestParam String isbn) {
+    try {
+        URL url = new URL("https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn);
+        GoogleBookApiResponse response = objectMapper.readValue(url, GoogleBookApiResponse.class);
+
+        if (response != null && response.getItems() != null && !response.getItems().isEmpty()){
+            GoogleBookApiResponse.GoogleBookItem item = response.getItems().get(0);
+            GoogleBookApiResponse.GoogleBookVolumeInfo volumeInfo = item.getVolumeInfo();
+
+            Book book = new Book();
+            book.setTitle(volumeInfo.getTitle());
+            if (volumeInfo.getAuthors() != null) {
+                book.setAuthors(volumeInfo.getAuthors().toString());
+            }
+            if (volumeInfo.getPublishDate() != null) {
+                book.setPublishDate(volumeInfo.getPublishDate());
+            }
+            book.setIsbn(isbn);
+            bookRepository.save(book);
+
+            return ResponseEntity.ok("Book saved successfully.");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+}
+
 
     @GetMapping("/books/{id}")
     public ResponseEntity<Book> getById(@PathVariable Long id) {
