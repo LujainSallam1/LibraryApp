@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.Column;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -44,25 +46,27 @@ public class BookController {
     public ResponseEntity<Book> add(@RequestBody Book book) {
         Book savedbook = bookRepository.save(book);
         return ResponseEntity.ok(savedbook);
-    }
+    }@PutMapping("/books/{id}")
+    public ResponseEntity<Book> update(@PathVariable(value = "id") Long id, @RequestBody Book body) {
+        Optional<Book> bookOptional = bookRepository.findById(id);
+        Book bookDB;
 
+        if (bookOptional.isPresent()){
+            bookDB = bookOptional.get();
 
-    @PutMapping("/books/{id}")
-    public ResponseEntity<Book> update(@PathVariable(value = "id") Long id, @RequestBody Book book) {
-        Optional<Book> optionalBook = bookRepository.findById(id);
-        if (optionalBook.isPresent()) {
-            Book orginalbook = optionalBook.get();
-            orginalbook.setIsbn(book.getIsbn());
-            orginalbook.setTitle(book.getTitle());
-            orginalbook.setAuthors(book.getAuthors());
-            orginalbook.setPublishDate(book.getPublishDate());
-            orginalbook.setSummary(book.getSummary());
+            if (Objects.nonNull(body.getIsbn()))          bookDB.setIsbn(body.getIsbn());
+            if (Objects.nonNull(body.getTitle()))         bookDB.setTitle(body.getTitle());
+            if (Objects.nonNull(body.getAuthors()))       bookDB.setAuthors(body.getAuthors());
+            if (Objects.nonNull(body.getPublishDate()))   bookDB.setPublishDate(body.getPublishDate());
+            if (Objects.nonNull(body.getSummary()))       bookDB.setSummary(body.getSummary());
 
-            Book updatedBookEntity = bookRepository.save(book);
-            return ResponseEntity.ok(updatedBookEntity);
-        } else {
+        }
+        else {
             return ResponseEntity.notFound().build();
         }
+
+        Book updatedBook = bookRepository.save(bookDB);
+        return ResponseEntity.ok(updatedBook);
     }
 
 //    @DeleteMapping("/books/{isbn}")
@@ -81,6 +85,7 @@ public boolean borrow(@PathVariable(value = "id") Long id) {
     if (optionalBook.isPresent()) {
         Book book = optionalBook.get();
         if (!book.isBorrowed())
+            book.setIncheckDate(LocalDate.now());
             book.setBorrowed(true);
         bookRepository.save(book);
         return true;
@@ -94,6 +99,7 @@ public boolean borrow(@PathVariable(value = "id") Long id) {
             Book book = optionalBook.get();
             if (book.isBorrowed())
                 book.setBorrowed(false);
+                book.setOutcheckDate(LocalDate.now());
             bookRepository.save(book);
         }
         return true;

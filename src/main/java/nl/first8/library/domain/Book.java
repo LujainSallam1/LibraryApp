@@ -30,8 +30,27 @@ public class Book {
 
     @Column(name = "summary")
     private String summary;
+    @Column(name = "incheckDate")
+    private LocalDate incheckDate;
 
+    @Column(name = "outcheckDate")
+    private LocalDate outcheckDate;
 
+    public LocalDate getIncheckDate() {
+        return incheckDate;
+    }
+
+    public LocalDate getOutcheckDate() {
+        return outcheckDate;
+    }
+
+    public void setOutcheckDate(LocalDate outcheckDate) {
+        this.outcheckDate = outcheckDate;
+    }
+
+    public void setIncheckDate(LocalDate incheckDate) {
+        this.incheckDate = incheckDate;
+    }
 
     public String getSummary() {
         return summary;
