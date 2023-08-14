@@ -6,14 +6,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
-public interface BookRepository extends JpaRepository<Book, Long> {
+public interface BookInstanceRepository extends JpaRepository<Book, Long> {
 
     @Transactional
     public void deleteByIsbn(String isbn);
 
 
-    Optional<Book> findByIsbn(String isbn);
+    List<Book> findByIsbn(String isbn);
 }

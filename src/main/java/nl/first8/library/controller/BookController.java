@@ -1,6 +1,7 @@
 package nl.first8.library.controller;
 
 import nl.first8.library.domain.Book;
+import nl.first8.library.domain.BookInstance;
 import nl.first8.library.domain.Member;
 import nl.first8.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.Column;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping(path = "/api/v1", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE })
@@ -25,11 +23,24 @@ public class BookController {
     @GetMapping("/books")
     public List<Book> getAll(@RequestParam(required=false) String isbn) {
         if(isbn != null){
-            return bookRepository.findByIsbn(isbn);
+            List<Book> singleBookList = new ArrayList<>();
+            singleBookList.add(bookRepository.findByIsbn(isbn).get());
+            return singleBookList;
         }
         else {
             return bookRepository.findAll();
         }
+    }
+
+    @GetMapping("/books/{id}/instances")
+    public ResponseEntity<Book> getInstancesByIsbn(@PathVariable String isbn) {
+        Optional<Book> optionalBook = bookRepository.findByIsbn(isbn);
+        if (optionalBook.isPresent()) {
+            Book book = optionalBook.get();
+            return ResponseEntity.ok(book);
+        } else
+            return ResponseEntity.notFound().build();
+
     }
 
     @GetMapping("/books/{id}")
