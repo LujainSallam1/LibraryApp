@@ -178,7 +178,6 @@ public class BookController {
     }
 //nj,fhkjfhm,jfff
 
-
     @GetMapping("/books/{id}")
     public ResponseEntity<Book> getById(@PathVariable Long id) {
         Optional<Book> optionalBook = bookRepository.findById(id);

@@ -1,5 +1,9 @@
 package nl.first8.library.controller;
 
+import nl.first8.library.controller.exceptions.BookAlreadyBorrowedException;
+import nl.first8.library.controller.exceptions.BookNotFoundException;
+import nl.first8.library.controller.exceptions.MemberMaxBorrowedException;
+import nl.first8.library.controller.exceptions.MemberNotFoundException;
 import nl.first8.library.domain.Book;
 import nl.first8.library.domain.Member;
 import nl.first8.library.repository.BookRepository;
@@ -13,8 +17,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.web.bind.annotation.*;
-
-import static nl.first8.library.repository.MemberRepository.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -105,21 +107,17 @@ public class MemberController {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
         Optional<Member> optionalMember = memberRepository.findById(memberId);
 
-        if ( !optionalBook.isPresent() ) {
-            return new ResponseEntity<>("Book with ID " + bookId + " not found", HttpStatus.NOT_FOUND);
-        }
-        else if ( !optionalMember.isPresent() ) {
-            return new ResponseEntity<>("Member with ID " + memberId + " not found", HttpStatus.NOT_FOUND);
-        }
+        if ( !optionalBook.isPresent() )        throw new BookNotFoundException(bookId);
+        else if ( !optionalMember.isPresent() ) throw new MemberNotFoundException(memberId);
         else { // Execution flow
             Book book = optionalBook.get();
             Member member = optionalMember.get();
 
-            if ( book.isBorrowed() ) {
-                return new ResponseEntity<>("Book \"" + book.getTitle() + "\" with book ID " + bookId + " has already been borrowed.", HttpStatus.BAD_REQUEST);
+            if ( book.isBorrowed() ){
+                throw new BookAlreadyBorrowedException(book);
             }
-            else if ( member.getBorrowedbooks().size() >= member.getMaxLeenbaarProducten() ){
-                return new ResponseEntity<>("Member " + member.getId() + " had already reached the maximum amount of borrowed books.", HttpStatus.BAD_REQUEST);
+            else if ( member.getBorrowedbooks().size() >= member.getMaxLeenbaarProducten() ) {
+                throw new MemberMaxBorrowedException(memberId);
             }
             else { // Execution flow
                 book.setBorrowed(true);
@@ -129,9 +127,10 @@ public class MemberController {
                 member.getBorrowedbooks().add(book);
                 memberRepository.save(member);
 
-                return ResponseEntity.ok("Member " + member.getId() + " borrowed book \"" + book.getTitle() + "\" successfully.");
+                return ResponseEntity.ok("Member " + member.getId() + " borrowed book \"" + book.getTitle() + "\" with ID " + bookId + " successfully.");
             }
         }
+    }
 
 
 //
@@ -159,8 +158,6 @@ public class MemberController {
 //        } else{
 //            System.out.println("no book with this id");
 //        }
-
-    }
 
     @PutMapping("/{memberid}/return/{bookid}")
     public ResponseEntity<String> returnBookMember(@PathVariable Long memberid, @PathVariable Long bookid) {
