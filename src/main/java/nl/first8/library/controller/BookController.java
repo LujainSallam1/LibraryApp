@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
 import javax.persistence.Column;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -24,10 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-@RequestMapping(path = "/api/v1", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE })
+@RequestMapping(path = "/api/v1", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
 public class BookController {
     @Autowired
     public BookController(ObjectMapper objectMapper) {
@@ -63,96 +65,117 @@ public class BookController {
         // إرجاع الاستجابة من Google Books API
         return response;
     }
-    @PostMapping("/searchbooks_and_add")
-    public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload ) {
-        String barcodeInfo = payload.get("barcode_info");
-        String userid= payload.get("user_id");
-//public ResponseEntity<String> searchBooks(@RequestParam String isbn) {
-        try {
-            URL url = new URL("https://www.googleapis.com/books/v1/volumes?q=isbn:" + barcodeInfo);
-            GoogleBookApiResponse response = objectMapper.readValue(url, GoogleBookApiResponse.class);
 
-            if (response != null && response.getItems() != null && !response.getItems().isEmpty()){
-                GoogleBookApiResponse.GoogleBookItem item = response.getItems().get(0);
-                GoogleBookApiResponse.GoogleBookVolumeInfo volumeInfo = item.getVolumeInfo();
-
-                Book book = new Book();
-                book.setTitle(volumeInfo.getTitle());
-                if (volumeInfo.getAuthors() != null) {
-                    book.setAuthors(volumeInfo.getAuthors().toString());
-                }
-                if (volumeInfo.getPublishDate() != null) {
-                    book.setPublishDate(volumeInfo.getPublishDate());
-                }
-                book.setIsbn(barcodeInfo);
-                bookRepository.save(book);
-                System.out.println("Book saved successfully.");
-                return ResponseEntity.ok("Book saved successfully.");
-
-            } else {
-                System.out.println("dkkkkkkkkkkkkkkkkkkkkkkk.");
-                return ResponseEntity.notFound().build();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-//    @PostMapping("/searchbooks_and_add")
-//    public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload) {
+    //    @PostMapping("/searchbooks_and_add")
+//    public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload ) {
 //        String barcodeInfo = payload.get("barcode_info");
-//        String userid = payload.get("user_id");
-//
+//        String userid= payload.get("user_id");
+////public ResponseEntity<String> searchBooks(@RequestParam String isbn) {
 //        try {
 //            URL url = new URL("https://www.googleapis.com/books/v1/volumes?q=isbn:" + barcodeInfo);
 //            GoogleBookApiResponse response = objectMapper.readValue(url, GoogleBookApiResponse.class);
 //
-//            if (response != null && response.getItems() != null && !response.getItems().isEmpty()) {
+//            if (response != null && response.getItems() != null && !response.getItems().isEmpty()){
 //                GoogleBookApiResponse.GoogleBookItem item = response.getItems().get(0);
 //                GoogleBookApiResponse.GoogleBookVolumeInfo volumeInfo = item.getVolumeInfo();
-//                Book existingBook= bookRepository.findByIsbn(barcodeInfo).get(0);
-////                Book existingBook = bookRepository.findByIsbn(barcodeInfo);
 //
-//                if (existingBook != null) {
-//                    if (existingBook.isBorrowed()) {
-//                        existingBook.setOutcheckDate(LocalDate.now());
-//                        existingBook.setIncheckDate(null);
-//                        existingBook.setBorrowed(false);
-//                        bookRepository.save(existingBook);
-//                        System.out.println("Book returned successfully");
-//                        return ResponseEntity.ok("Book returned successfully");
-//                    } else {
-//                        existingBook.setOutcheckDate(null);
-//                        existingBook.setIncheckDate(LocalDate.now());
-//                        existingBook.setBorrowed(true);
-//                        bookRepository.save(existingBook);
-//                        System.out.println("Book borrowed successfully");
-//                        return ResponseEntity.ok("Book borrowed successfully");
-//                    }
-//                } else {
-//                    Book book = new Book();
-//                    book.setTitle(volumeInfo.getTitle());
-//                    if (volumeInfo.getAuthors() != null) {
-//                        book.setAuthors(volumeInfo.getAuthors().toString());
-//                    }
-//                    if (volumeInfo.getPublishDate() != null) {
-//                        book.setPublishDate(volumeInfo.getPublishDate());
-//                    }
-//                    book.setIsbn(barcodeInfo);
-//                    bookRepository.save(book);
-//                    System.out.println("Book saved successfully.");
-//                    return ResponseEntity.ok("Book saved successfully.");
+//                Book book = new Book();
+//                book.setTitle(volumeInfo.getTitle());
+//                if (volumeInfo.getAuthors() != null) {
+//                    book.setAuthors(volumeInfo.getAuthors().toString());
 //                }
+//                if (volumeInfo.getPublishDate() != null) {
+//                    book.setPublishDate(volumeInfo.getPublishDate());
+//                }
+//                book.setIsbn(barcodeInfo);
+//                bookRepository.save(book);
+//                System.out.println("Book saved successfully.");
+//                return ResponseEntity.ok("Book saved successfully.");
+//
 //            } else {
-//                System.out.println("Book not found.");
+//                System.out.println("dkkkkkkkkkkkkkkkkkkkkkkk.");
 //                return ResponseEntity.notFound().build();
 //            }
-//        } catch (MalformedURLException e) {
-//            throw new RuntimeException(e);
 //        } catch (IOException e) {
-//            throw new RuntimeException(e);
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 //        }
 //    }
+    @PostMapping("/searchbooks_and_add")
+    public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload) {
+        String barcodeInfo = payload.get("barcode_info");
+        String userid = payload.get("user_id");
+
+        try {
+            List<Book> foundBooks = bookRepository.findByIsbn(barcodeInfo);
+
+            System.out.println("Book not found in our database.");
+            if (foundBooks == null || foundBooks.isEmpty()) {
+
+                return handleNonExistingBook(barcodeInfo);
+            } else {
+                return handleExistingBook(foundBooks.get(0));
+            }
+
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ResponseEntity<String> handleNonExistingBook(String barcodeInfo) throws IOException {
+        System.out.println("Book does not exist in our database");
+
+        URL url = new URL("https://www.googleapis.com/books/v1/volumes?q=isbn:" + barcodeInfo);
+        GoogleBookApiResponse response = objectMapper.readValue(url, GoogleBookApiResponse.class);
+
+        if (response != null && response.getItems() != null && !response.getItems().isEmpty()) {
+            GoogleBookApiResponse.GoogleBookItem item = response.getItems().get(0);
+            GoogleBookApiResponse.GoogleBookVolumeInfo volumeInfo = item.getVolumeInfo();
+//                Book existingBook = bookRepository.findByIsbn(barcodeInfo);
+
+            Book book = new Book();
+            book.setTitle(volumeInfo.getTitle());
+            if (volumeInfo.getAuthors() != null) {
+                book.setAuthors(volumeInfo.getAuthors().toString());
+            }
+            if (volumeInfo.getPublishDate() != null) {
+                book.setPublishDate(volumeInfo.getPublishDate());
+            }
+            book.setIsbn(barcodeInfo);
+            bookRepository.save(book);
+            System.out.println("Book saved successfully.");
+            return ResponseEntity.ok("Book saved successfully.");
+
+        } else {
+            System.out.println("Book not found at google");
+            return ResponseEntity.notFound().build();
+        }
+
+
+    }
+
+    private ResponseEntity<String> handleExistingBook(Book existingBook) {
+        System.out.println("Book exists");
+        if (existingBook.isBorrowed()) {
+            System.out.println("Book is borrowed");
+            existingBook.setOutcheckDate(LocalDate.now());
+            existingBook.setIncheckDate(null);
+            existingBook.setBorrowed(false);
+            bookRepository.save(existingBook);
+            System.out.println("Book returned successfully");
+            return ResponseEntity.ok("Book returned successfully");
+        } else {
+            System.out.println("Book is not borrowed");
+            existingBook.setOutcheckDate(null);
+            existingBook.setIncheckDate(LocalDate.now());
+            existingBook.setBorrowed(true);
+            bookRepository.save(existingBook);
+            System.out.println("Book borrowed successfully");
+            return ResponseEntity.ok("Book borrowed successfully");
+        }
+    }
 //nj,fhkjfhm,jfff
 
 
