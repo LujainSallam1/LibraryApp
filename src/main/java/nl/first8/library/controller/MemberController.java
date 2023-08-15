@@ -111,7 +111,7 @@ public class MemberController {
                     if(member.getBorrowedbooks().size() < member.getMaxLeenbaarProducten()){
 
                     book.setBorrowed(true);
-                    book.setIncheckDate(LocalDate.now());
+                    book.setOutcheckDate(LocalDate.now());
                     bookRepository.save(book);
                     member.getBorrowedbooks().add(book);
                     memberRepository.save(member);
@@ -130,7 +130,7 @@ public class MemberController {
 
     }
 
-    @PostMapping("/{memberid}/return/{bookid}")
+    @PutMapping("/{memberid}/return/{bookid}")
     public ResponseEntity<String> returnBookMember(@PathVariable Long memberid, @PathVariable Long bookid) {
         Optional<Book> optionalBook = bookRepository.findById(bookid);
         Optional<Member> optionalMember = memberRepository.findById(memberid);
@@ -141,7 +141,7 @@ public class MemberController {
 
             if (book.isBorrowed()) {
                 book.setBorrowed(false);
-                book.setOutcheckDate(LocalDate.now());
+                book.setIncheckDate(LocalDate.now());
                 bookRepository.save(book);
                 member.getBorrowedbooks().remove(book);
                 memberRepository.save(member);

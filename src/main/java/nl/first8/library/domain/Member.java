@@ -1,20 +1,21 @@
 package nl.first8.library.domain;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "member")
 @SequenceGenerator(name="members_id_seq", initialValue=11, allocationSize=1000)
 public class Member {
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Book> borrowedbooks;
+    @OneToMany
+    private List<Book> borrowedbooks;
 
-    public Set<Book> getBorrowedbooks() {
+    public List<Book> getBorrowedbooks() {
         return borrowedbooks;
     }
 
-    public void setBorrowedbooks(Set<Book> borrowedbooks) {
+    public void setBorrowedbooks(List<Book> borrowedbooks) {
         this.borrowedbooks = borrowedbooks;
     }
 
