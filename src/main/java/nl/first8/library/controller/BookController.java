@@ -160,16 +160,16 @@ public class BookController {
         System.out.println("Book exists");
         if (existingBook.isBorrowed()) {
             System.out.println("Book is borrowed");
-            existingBook.setOutcheckDate(LocalDate.now());
-            existingBook.setIncheckDate(null);
+            existingBook.setIncheckDate(LocalDate.now());
+            existingBook.setOutcheckDate(null);
             existingBook.setBorrowed(false);
             bookRepository.save(existingBook);
             System.out.println("Book returned successfully");
             return ResponseEntity.ok("Book returned successfully");
         } else {
             System.out.println("Book is not borrowed");
-            existingBook.setOutcheckDate(null);
-            existingBook.setIncheckDate(LocalDate.now());
+            existingBook.setIncheckDate(null);
+            existingBook.setOutcheckDate(LocalDate.now());
             existingBook.setBorrowed(true);
             bookRepository.save(existingBook);
             System.out.println("Book borrowed successfully");
