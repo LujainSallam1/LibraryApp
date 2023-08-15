@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @RestController
-@RequestMapping(path = "/api/v1")//, produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE })
+@RequestMapping(path = "/api/v1", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
 public class BookController {
     @Autowired
     private BookRepository bookRepository;

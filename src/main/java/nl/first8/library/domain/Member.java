@@ -10,6 +10,7 @@ import nl.first8.library.domain.Book;
 @Table(name = "member")
 @SequenceGenerator(name="members_id_seq", initialValue=11, allocationSize=1000)
 public class Member {
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "borrowedBy")
     private Set<Book> borrowedbooks;
 
