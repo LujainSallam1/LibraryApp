@@ -99,34 +99,66 @@ public class MemberController {
         }
         return true;
     }
-    @PutMapping("/members/{memberid}/borrowedbook/{bookid}")
-    public void borrowBookmember(@PathVariable(value = "memberid") Long memberid, @PathVariable(value = "bookid") Long bookid) {
-        Optional<Book> optionalbook = bookRepository.findById(bookid);
-        Optional<Member> optionalmember = memberRepository.findById(memberid);
-        if (optionalbook.isPresent() && optionalmember.isPresent()) {
-            Book book = optionalbook.get();
-            Member member = optionalmember.get();
-            {
-                if (!book.isBorrowed()) {
-                    if(member.getBorrowedbooks().size() < member.getMaxLeenbaarProducten()){
 
-                    book.setBorrowed(true);
-                    book.setOutcheckDate(LocalDate.now());
-                    bookRepository.save(book);
-                    member.getBorrowedbooks().add(book);
-                    memberRepository.save(member);
-                    }else {
-                        System.out.println("You cant borrow more books");
-                    }
-                } else {
-                    System.out.println("Book is already borrowed");
+    @PutMapping("/members/{member_id}/borrow/{book_id}")
+    public ResponseEntity<String> borrowBookMember(@PathVariable(value = "member_id") Long memberId, @PathVariable(value = "book_id") Long bookId) {
+        Optional<Book> optionalBook = bookRepository.findById(bookId);
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
 
-                }
-            }
-
-        } else{
-            System.out.println("no book with this id");
+        if ( !optionalBook.isPresent() ) {
+            return new ResponseEntity<>("Book with ID " + bookId + " not found", HttpStatus.NOT_FOUND);
         }
+        else if ( !optionalMember.isPresent() ) {
+            return new ResponseEntity<>("Member with ID " + memberId + " not found", HttpStatus.NOT_FOUND);
+        }
+        else { // Execution flow
+            Book book = optionalBook.get();
+            Member member = optionalMember.get();
+
+            if ( book.isBorrowed() ) {
+                return new ResponseEntity<>("Book \"" + book.getTitle() + "\" with book ID " + bookId + " has already been borrowed.", HttpStatus.BAD_REQUEST);
+            }
+            else if ( member.getBorrowedbooks().size() >= member.getMaxLeenbaarProducten() ){
+                return new ResponseEntity<>("Member " + member.getId() + " had already reached the maximum amount of borrowed books.", HttpStatus.BAD_REQUEST);
+            }
+            else { // Execution flow
+                book.setBorrowed(true);
+                book.setOutcheckDate(LocalDate.now());
+                bookRepository.save(book);
+
+                member.getBorrowedbooks().add(book);
+                memberRepository.save(member);
+
+                return ResponseEntity.ok("Member " + member.getId() + " borrowed book \"" + book.getTitle() + "\" successfully.");
+            }
+        }
+
+
+//
+//        if (optionalBook.isPresent() && optionalMember.isPresent()) {
+//            Book book = optionalBook.get();
+//            Member member = optionalMember.get();
+//            {
+//                if (!book.isBorrowed()) {
+//                    if(member.getBorrowedbooks().size() < member.getMaxLeenbaarProducten()){
+//
+//                    book.setBorrowed(true);
+//                    book.setOutcheckDate(LocalDate.now());
+//                    bookRepository.save(book);
+//                    member.getBorrowedbooks().add(book);
+//                    memberRepository.save(member);
+//                    }else {
+//                        System.out.println("You cant borrow more books");
+//                    }
+//                } else {
+//                    System.out.println("Book is already borrowed");
+//
+//                }
+//            }
+//
+//        } else{
+//            System.out.println("no book with this id");
+//        }
 
     }
 
