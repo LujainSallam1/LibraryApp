@@ -1,4 +1,4 @@
-package nl.first8.library.domain;
+package nl.first8.library.domain.entity;
 
 import javax.persistence.*;
 import java.time.LocalDate;

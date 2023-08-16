@@ -1,8 +1,9 @@
-package nl.first8.library.domain;
+package nl.first8.library.domain.entity;
+
+import nl.first8.library.domain.entity.Book;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "member")

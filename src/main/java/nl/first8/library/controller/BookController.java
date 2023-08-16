@@ -2,7 +2,7 @@ package nl.first8.library.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.first8.library.controller.exceptions.GoogleBookNotFoundException;
-import nl.first8.library.domain.Book;
+import nl.first8.library.domain.entity.Book;
 import nl.first8.library.domain.GoogleBookApiResponse;
 import nl.first8.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class BookController {
         }
     }
 
-
+    //TODO: rename endpoint, both here and in Python project
     @PostMapping("/searchbooks_and_add")
     public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload) {
         String isbn = payload.get("barcode_info");
@@ -54,7 +54,6 @@ public class BookController {
 
             System.out.println("Book not found in our database.");
             if (foundBooks == null || foundBooks.isEmpty()) {
-
                 return handleNonExistingBook(isbn);
             } else {
                 return handleExistingBook(foundBooks.get(0));
@@ -160,6 +159,26 @@ public class BookController {
 
     @PutMapping("/books/{id}/borrow")
     public boolean borrow(@PathVariable(value = "id") Long id) {
+        /* Omar denkt dat het zo moet maybe
+          public Optional<Book> borrow(@PathVariable(value = "id") Long id) {
+            Optional<Book> optionalBook = BookAdminService.findById(id)              ( en dan later Optional<BookDTO> optionalBookDTO = BookAdminService.findById(id) )
+            return optionalBook;
+
+            dus in BookAdminService.findById(id) staat:
+
+            Optional<Book> optionalBook = bookRepository.findById(id);
+            if (optionalBook.isPresent()) {
+                Book book = optionalBook.get();
+                if (!book.isBorrowed())
+                    book.setReturnDate(LocalDate.now());
+                book.setBorrowed(true);
+                bookRepository.save(book);
+                return book;
+            }
+            return book;
+        */
+
+
         Optional<Book> optionalBook = bookRepository.findById(id);
         if (optionalBook.isPresent()) {
             Book book = optionalBook.get();

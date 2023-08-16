@@ -2,7 +2,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import nl.first8.library.controller.MemberController;
-import nl.first8.library.domain.Member;
+import nl.first8.library.domain.entity.Member;
 import nl.first8.library.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

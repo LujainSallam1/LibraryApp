@@ -1,6 +1,6 @@
 package nl.first8.library.controller.exceptions;
 
-import nl.first8.library.domain.Book;
+import nl.first8.library.domain.entity.Book;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
