@@ -61,22 +61,6 @@ public class MemberController {
         Member updatedMember = memberRepository.save(memberdb);
         return ResponseEntity.ok(updatedMember);
     }
-//    @PutMapping("/members/{id}")
-//    public ResponseEntity<Member> update(@PathVariable(value = "id") Long id, @RequestBody Member member) {
-//        Optional<Member> optionalMember = memberRepository.findById(id);
-//        if (optionalMember.isPresent()) {
-//            Member orginalbook = optionalMember.get();
-//            orginalbook.setNaam(member.getNaam());
-//            orginalbook.setAdres(member.getAdres());
-//            orginalbook.setWoonplaats(member.getWoonplaats());
-//
-//            Member updatedMemberEntity = memberRepository.save(member);
-//            return ResponseEntity.ok(updatedMemberEntity);
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
-
     @PutMapping("/members/{id}/disable")
     public boolean disable(@PathVariable(value = "id") Long id) {
         Optional<Member> optionalMember = memberRepository.findById(id);
@@ -121,7 +105,7 @@ public class MemberController {
             }
             else { // Execution flow
                 book.setBorrowed(true);
-                book.setOutcheckDate(LocalDate.now());
+                book.setBorrowDate(LocalDate.now());
                 bookRepository.save(book);
 
                 member.getBorrowedbooks().add(book);
@@ -132,32 +116,6 @@ public class MemberController {
         }
     }
 
-
-//
-//        if (optionalBook.isPresent() && optionalMember.isPresent()) {
-//            Book book = optionalBook.get();
-//            Member member = optionalMember.get();
-//            {
-//                if (!book.isBorrowed()) {
-//                    if(member.getBorrowedbooks().size() < member.getMaxLeenbaarProducten()){
-//
-//                    book.setBorrowed(true);
-//                    book.setOutcheckDate(LocalDate.now());
-//                    bookRepository.save(book);
-//                    member.getBorrowedbooks().add(book);
-//                    memberRepository.save(member);
-//                    }else {
-//                        System.out.println("You cant borrow more books");
-//                    }
-//                } else {
-//                    System.out.println("Book is already borrowed");
-//
-//                }
-//            }
-//
-//        } else{
-//            System.out.println("no book with this id");
-//        }
 
     @PutMapping("/{memberid}/return/{bookid}")
     public ResponseEntity<String> returnBookMember(@PathVariable Long memberid, @PathVariable Long bookid) {
@@ -170,7 +128,7 @@ public class MemberController {
 
             if (book.isBorrowed()) {
                 book.setBorrowed(false);
-                book.setIncheckDate(LocalDate.now());
+                book.setReturnDate(LocalDate.now());
                 bookRepository.save(book);
                 member.getBorrowedbooks().remove(book);
                 memberRepository.save(member);

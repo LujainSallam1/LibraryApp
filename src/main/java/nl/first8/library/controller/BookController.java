@@ -1,22 +1,16 @@
 package nl.first8.library.controller;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.first8.library.controller.exceptions.GoogleBookNotFoundException;
 import nl.first8.library.domain.Book;
 import nl.first8.library.domain.GoogleBookApiResponse;
-import nl.first8.library.domain.Member;
 import nl.first8.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import javax.persistence.Column;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,8 +20,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.web.client.RestTemplate;
-
 @RestController
 @RequestMapping(path = "/api/v1", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
 public class BookController {
@@ -35,9 +27,6 @@ public class BookController {
     public BookController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
-
-    @Autowired
-    private RestTemplate restTemplate;
     @Value("${google.books.api.key}")
     private String googleBooksApiKey;
     @Autowired
@@ -54,65 +43,19 @@ public class BookController {
         }
     }
 
-    @PostMapping("/books/search")
-    public ResponseEntity<String> searchBooksByIsbn(@RequestParam String isbn) {
-        // تكوين URL للبحث باستخدام رقم ISBN في Google Books API
-        String apiUrl = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn + "&key=" + googleBooksApiKey;
 
-        // إرسال طلب GET إلى Google Books API باستخدام RestTemplate
-        ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
-
-        // إرجاع الاستجابة من Google Books API
-        return response;
-    }
-
-    //    @PostMapping("/searchbooks_and_add")
-//    public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload ) {
-//        String barcodeInfo = payload.get("barcode_info");
-//        String userid= payload.get("user_id");
-////public ResponseEntity<String> searchBooks(@RequestParam String isbn) {
-//        try {
-//            URL url = new URL("https://www.googleapis.com/books/v1/volumes?q=isbn:" + barcodeInfo);
-//            GoogleBookApiResponse response = objectMapper.readValue(url, GoogleBookApiResponse.class);
-//
-//            if (response != null && response.getItems() != null && !response.getItems().isEmpty()){
-//                GoogleBookApiResponse.GoogleBookItem item = response.getItems().get(0);
-//                GoogleBookApiResponse.GoogleBookVolumeInfo volumeInfo = item.getVolumeInfo();
-//
-//                Book book = new Book();
-//                book.setTitle(volumeInfo.getTitle());
-//                if (volumeInfo.getAuthors() != null) {
-//                    book.setAuthors(volumeInfo.getAuthors().toString());
-//                }
-//                if (volumeInfo.getPublishDate() != null) {
-//                    book.setPublishDate(volumeInfo.getPublishDate());
-//                }
-//                book.setIsbn(barcodeInfo);
-//                bookRepository.save(book);
-//                System.out.println("Book saved successfully.");
-//                return ResponseEntity.ok("Book saved successfully.");
-//
-//            } else {
-//                System.out.println("dkkkkkkkkkkkkkkkkkkkkkkk.");
-//                return ResponseEntity.notFound().build();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
     @PostMapping("/searchbooks_and_add")
     public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload) {
-        String barcodeInfo = payload.get("barcode_info");
+        String isbn = payload.get("barcode_info");
         String userid = payload.get("user_id");
 
         try {
-            List<Book> foundBooks = bookRepository.findByIsbn(barcodeInfo);
+            List<Book> foundBooks = bookRepository.findByIsbn(isbn);
 
             System.out.println("Book not found in our database.");
             if (foundBooks == null || foundBooks.isEmpty()) {
 
-                return handleNonExistingBook(barcodeInfo);
+                return handleNonExistingBook(isbn);
             } else {
                 return handleExistingBook(foundBooks.get(0));
             }
@@ -124,17 +67,15 @@ public class BookController {
         }
     }
 
-    private ResponseEntity<String> handleNonExistingBook(String barcodeInfo) throws IOException {
+    private ResponseEntity<String> handleNonExistingBook(String isbn) throws IOException {
         System.out.println("Book does not exist in our database");
 
-        URL url = new URL("https://www.googleapis.com/books/v1/volumes?q=isbn:" + barcodeInfo);
+        URL url = new URL("https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn);
         GoogleBookApiResponse response = objectMapper.readValue(url, GoogleBookApiResponse.class);
 
         if (response != null && response.getItems() != null && !response.getItems().isEmpty()) {
             GoogleBookApiResponse.GoogleBookItem item = response.getItems().get(0);
             GoogleBookApiResponse.GoogleBookVolumeInfo volumeInfo = item.getVolumeInfo();
-//                Book existingBook = bookRepository.findByIsbn(barcodeInfo);
-
             Book book = new Book();
             book.setTitle(volumeInfo.getTitle());
             if (volumeInfo.getAuthors() != null) {
@@ -143,14 +84,14 @@ public class BookController {
             if (volumeInfo.getPublishDate() != null) {
                 book.setPublishDate(volumeInfo.getPublishDate());
             }
-            book.setIsbn(barcodeInfo);
+            book.setIsbn(isbn);
             bookRepository.save(book);
             System.out.println("Book saved successfully.");
             return ResponseEntity.ok("Book saved successfully.");
 
         } else {
             System.out.println("Book not found at google");
-            return ResponseEntity.notFound().build();
+           throw new GoogleBookNotFoundException(isbn);
         }
 
 
@@ -160,23 +101,22 @@ public class BookController {
         System.out.println("Book exists");
         if (existingBook.isBorrowed()) {
             System.out.println("Book is borrowed");
-            existingBook.setIncheckDate(LocalDate.now());
-            existingBook.setOutcheckDate(null);
+            existingBook.setReturnDate(LocalDate.now());
+            existingBook.setBorrowDate(null);
             existingBook.setBorrowed(false);
             bookRepository.save(existingBook);
             System.out.println("Book returned successfully");
             return ResponseEntity.ok("Book returned successfully");
         } else {
             System.out.println("Book is not borrowed");
-            existingBook.setIncheckDate(null);
-            existingBook.setOutcheckDate(LocalDate.now());
+            existingBook.setReturnDate(null);
+            existingBook.setBorrowDate(LocalDate.now());
             existingBook.setBorrowed(true);
             bookRepository.save(existingBook);
             System.out.println("Book borrowed successfully");
             return ResponseEntity.ok("Book borrowed successfully");
         }
     }
-//nj,fhkjfhm,jfff
 
     @GetMapping("/books/{id}")
     public ResponseEntity<Book> getById(@PathVariable Long id) {
@@ -217,61 +157,14 @@ public class BookController {
         return ResponseEntity.ok(updatedBook);
     }
 
-    //    @PostMapping("/books/upload-barcode")
-//    public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload ) {
-//        String barcodeInfo = payload.get("barcode_info");
-//        String userid= payload.get("user_id");
-//        return null;
-//    }
-//        if (barcodeInfo != null && userid != null ) {
-//            List<Book> optionalBook = bookRepository.findByIsbn(barcodeInfo);
-//
-//            if (!optionalBook.isEmpty()) {
-//                Book book = optionalBook.get(0);
-//                if (book.isBorrowed()) {
-//                    if (book.getOutcheckDate() == null) {
-//                        book.setOutcheckDate(LocalDate.now());
-//                        book.setBorrowed(false);
-//                        bookRepository.save(book);
-//                        System.out.println("Book returned successfully");
-//                        return ResponseEntity.ok("Book returned successfully");
-//
-//                    } else {
-//                         return ResponseEntity.notFound().build();
-//                    }
-//                } else {
-//                    // الكتاب غير مستعار، يجب إجراء إعارة
-//                    book.setBorrowed(true);
-//                    book.setIncheckDate(LocalDate.now());
-//                    bookRepository.save(book);
-//                    System.out.println("Book borrowed successfully");
-//                    return ResponseEntity.ok("Book borrowed successfully");
-//                }
-//            } else {
-//                return ResponseEntity.notFound().build();
-//
-//            }
-//        } else {
-//            return ResponseEntity.badRequest().body("Barcode info or user ID is missing");
-//        }
-//    }
-//    @DeleteMapping("/books/{isbn}")
-//    public ResponseEntity<Book> delet(@PathVariable String isbn) {
-//        Optional<Book> optionalBook = bookRepository.findByIsbn((isbn));
-//        if (optionalBook.isPresent()) {
-//            bookRepository.deleteByIsbn(isbn);
-//            return ResponseEntity.ok().build();
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
+
     @PutMapping("/books/{id}/borrow")
     public boolean borrow(@PathVariable(value = "id") Long id) {
         Optional<Book> optionalBook = bookRepository.findById(id);
         if (optionalBook.isPresent()) {
             Book book = optionalBook.get();
             if (!book.isBorrowed())
-                book.setIncheckDate(LocalDate.now());
+                book.setReturnDate(LocalDate.now());
             book.setBorrowed(true);
             bookRepository.save(book);
             return true;
@@ -286,7 +179,7 @@ public class BookController {
             Book book = optionalBook.get();
             if (book.isBorrowed())
                 book.setBorrowed(false);
-            book.setOutcheckDate(LocalDate.now());
+            book.setBorrowDate(LocalDate.now());
             bookRepository.save(book);
         }
         return true;

@@ -31,26 +31,26 @@ public class Book {
 
     @Column(name = "summary")
     private String summary;
-    @Column(name = "incheckDate")
-    private LocalDate incheckDate;
+    @Column(name = "returnDate")
+    private LocalDate returnDate;
 
     @Column(name = "outcheckDate")
-    private LocalDate outcheckDate;
+    private LocalDate borrowDate;
 
-    public LocalDate getIncheckDate() {
-        return incheckDate;
+    public LocalDate getReturnDate() {
+        return returnDate;
     }
 
-    public LocalDate getOutcheckDate() {
-        return outcheckDate;
+    public LocalDate getBorrowDate() {
+        return borrowDate;
     }
 
-    public void setOutcheckDate(LocalDate outcheckDate) {
-        this.outcheckDate = outcheckDate;
+    public void setBorrowDate(LocalDate outcheckDate) {
+        this.borrowDate = outcheckDate;
     }
 
-    public void setIncheckDate(LocalDate incheckDate) {
-        this.incheckDate = incheckDate;
+    public void setReturnDate(LocalDate incheckDate) {
+        this.returnDate = incheckDate;
     }
 
     public String getSummary() {
