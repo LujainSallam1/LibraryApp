@@ -162,7 +162,7 @@ public class BookController {
         /* Omar denkt dat het zo moet maybe
           public Optional<Book> borrow(@PathVariable(value = "id") Long id) {
             Optional<Book> optionalBook = BookAdminService.findById(id)              ( en dan later Optional<BookDTO> optionalBookDTO = BookAdminService.findById(id) )
-            return optionalBook;
+            return optionalBook();
 
             dus in BookAdminService.findById(id) staat:
 
