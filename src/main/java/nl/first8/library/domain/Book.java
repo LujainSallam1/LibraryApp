@@ -1,15 +1,18 @@
 package nl.first8.library.domain;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.time.LocalDate;
-import java.util.Date;
-
 
 @Entity
 @Table(name = "book")
 @SequenceGenerator(name="book_id_seq", initialValue=11, allocationSize=1000)
 public class Book {
-
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="book_id_seq")
     private Long id;
@@ -21,45 +24,13 @@ public class Book {
     private String title;
 
     @Column(name = "authors", nullable = false)
-   private  String authors;
+    private String authors;
 
-    @Column(name = "publish_date")
-    private Date publishDate;
+    @Column(name = "publish_date", nullable = false)
+    private LocalDate publishDate;
 
     @Column(name = "borrowed", columnDefinition = "boolean default false")
     private boolean borrowed;
-
-    @Column(name = "summary")
-    private String summary;
-    @Column(name = "incheckDate")
-    private LocalDate incheckDate;
-
-    @Column(name = "outcheckDate")
-    private LocalDate outcheckDate;
-
-    public LocalDate getIncheckDate() {
-        return incheckDate;
-    }
-
-    public LocalDate getOutcheckDate() {
-        return outcheckDate;
-    }
-
-    public void setOutcheckDate(LocalDate outcheckDate) {
-        this.outcheckDate = outcheckDate;
-    }
-
-    public void setIncheckDate(LocalDate incheckDate) {
-        this.incheckDate = incheckDate;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
 
     public Long getId() {
         return id;
@@ -93,11 +64,11 @@ public class Book {
         this.authors = authors;
     }
 
-    public Date getPublishDate() {
+    public LocalDate getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(Date publishdDate ) {
+    public void setPublishDate( LocalDate publishdDate ) {
         this.publishDate = publishdDate;
     }
 
