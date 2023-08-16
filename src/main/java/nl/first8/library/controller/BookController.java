@@ -5,8 +5,11 @@ import nl.first8.library.controller.exceptions.GoogleBookNotFoundException;
 import nl.first8.library.domain.entity.Book;
 import nl.first8.library.domain.GoogleBookApiResponse;
 import nl.first8.library.repository.BookRepository;
+import nl.first8.library.service.BookAdminService;
+import nl.first8.library.service.BorrowReturnService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +28,10 @@ import java.util.Optional;
 public class BookController {
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private BorrowReturnService borrowReturnService;
+    @Autowired
+    private BookAdminService bookAdminService;
 
     @GetMapping("/books")
     public List<Book> getAll(@RequestParam(required = false) String isbn) {
@@ -77,52 +84,14 @@ public class BookController {
 
 
     @PutMapping("/books/{id}/borrow")
-    public boolean borrow(@PathVariable(value = "id") Long id) {
-        /* Omar denkt dat het zo moet maybe
-          public Optional<Book> borrow(@PathVariable(value = "id") Long id) {
-            Optional<Book> optionalBook = BookAdminService.findById(id)              ( en dan later Optional<BookDTO> optionalBookDTO = BookAdminService.findById(id) )
-            return optionalBook();
-
-            dus in BookAdminService.findById(id) staat:
-
-            Optional<Book> optionalBook = bookRepository.findById(id);
-            if (optionalBook.isPresent()) {
-                Book book = optionalBook.get();
-                if (!book.isBorrowed())
-                    book.setReturnDate(LocalDate.now());
-                book.setBorrowed(true);
-                bookRepository.save(book);
-                return book;
-            }
-            return book;
-        */
-
-
-        Optional<Book> optionalBook = bookRepository.findById(id);
-        if (optionalBook.isPresent()) {
-            Book book = optionalBook.get();
-            if (!book.isBorrowed())
-                book.setReturnDate(LocalDate.now());
-            book.setBorrowed(true);
-            bookRepository.save(book);
-            return true;
-        }
-        return false;
+    public ResponseEntity<Book> borrow(@PathVariable(value = "id") Long id) {
+        return borrowReturnService.borrow(id);
     }
 
     @PutMapping("/books/{id}/handin")
-    public boolean handin(@PathVariable(value = "id") Long id) {
-        Optional<Book> optionalBook = bookRepository.findById(id);
-        if (optionalBook.isPresent()) {
-            Book book = optionalBook.get();
-            if (book.isBorrowed())
-                book.setBorrowed(false);
-            book.setBorrowDate(LocalDate.now());
-            bookRepository.save(book);
-        }
-        return true;
-    }
-}
+    public ResponseEntity<Book> handin(@PathVariable(value = "id") Long id) {
+      return borrowReturnService.handin(id);
+}}
 
 
 
