@@ -1,9 +1,6 @@
 package nl.first8.library.controller;
 
-import nl.first8.library.controller.exceptions.BookAlreadyBorrowedException;
-import nl.first8.library.controller.exceptions.BookNotFoundException;
-import nl.first8.library.controller.exceptions.MemberMaxBorrowedException;
-import nl.first8.library.controller.exceptions.MemberNotFoundException;
+import nl.first8.library.controller.exceptions.*;
 import nl.first8.library.domain.Book;
 import nl.first8.library.domain.Member;
 import nl.first8.library.repository.BookRepository;
@@ -106,6 +103,7 @@ public class MemberController {
             else { // Execution flow
                 book.setBorrowed(true);
                 book.setBorrowDate(LocalDate.now());
+                book.setReturnDate(null);
                 bookRepository.save(book);
 
                 member.getBorrowedbooks().add(book);
@@ -116,28 +114,31 @@ public class MemberController {
         }
     }
 
+    @PutMapping("/{member_id}/return/{book_id}")
+    public ResponseEntity<String> returnBookMember(@PathVariable(value = "member_id") Long memberId, @PathVariable(value = "book_id") Long bookId) {
+        Optional<Book> optionalBook = bookRepository.findById(bookId);
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
 
-    @PutMapping("/{memberid}/return/{bookid}")
-    public ResponseEntity<String> returnBookMember(@PathVariable Long memberid, @PathVariable Long bookid) {
-        Optional<Book> optionalBook = bookRepository.findById(bookid);
-        Optional<Member> optionalMember = memberRepository.findById(memberid);
-
-        if (optionalBook.isPresent() && optionalMember.isPresent()) {
+        if ( !optionalBook.isPresent() )        throw new BookNotFoundException(bookId);
+        else if ( !optionalMember.isPresent() ) throw new MemberNotFoundException(memberId);
+        else { // Execution flow
             Book book = optionalBook.get();
             Member member = optionalMember.get();
 
-            if (book.isBorrowed()) {
+            if ( !book.isBorrowed() ){
+                throw new BookNotBorrowedException(book);
+            }
+            else { // Execution flow
                 book.setBorrowed(false);
                 book.setReturnDate(LocalDate.now());
+                book.setBorrowDate(null);
                 bookRepository.save(book);
+
                 member.getBorrowedbooks().remove(book);
                 memberRepository.save(member);
-                return ResponseEntity.ok("Book returned successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Book is not borrowed");
+
+                return ResponseEntity.ok("Member " + member.getId() + " returned book \"" + book.getTitle() + "\" with ID " + bookId + " successfully.");
             }
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book or member not found");
         }
     }
 }
