@@ -2,9 +2,13 @@ package nl.first8.library.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.first8.library.controller.exceptions.GoogleBookNotFoundException;
+import nl.first8.library.controller.exceptions.MemberNotFoundException;
 import nl.first8.library.domain.GoogleBookApiResponse;
 import nl.first8.library.domain.entity.Book;
+import nl.first8.library.domain.entity.Member;
 import nl.first8.library.repository.BookRepository;
+import nl.first8.library.repository.MemberRepository;
+import org.apache.http.HttpConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -15,12 +19,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api/v1", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -35,21 +44,54 @@ public class ScannerController {
     @Autowired
     private BookRepository bookRepository;
     @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
     private ObjectMapper objectMapper;
 
     //TODO: rename endpoint, both here and in Python project
     @PostMapping("/searchbooks_and_add")
     public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload) {
         String isbn = payload.get("barcode_info");
-        String userid = payload.get("user_id");
+        //at this point, the "user" can only do actions on behalf of itself, so member=user
+        Long memberId = Long.parseLong(payload.get("user_id"));
 
         try {
             List<Book> foundBooks = bookRepository.findByIsbn(isbn);
 
-            System.out.println("Book not found in our database.");
+            Optional<Member> optionalMember = memberRepository.findById(memberId);
+
             if (foundBooks == null || foundBooks.isEmpty()) {
                 return handleNonExistingBook(isbn);
-            } else {
+            } else if (!optionalMember.isPresent()) {
+                throw new MemberNotFoundException(memberId);
+            } else { // Execution Flow
+                Member member = optionalMember.get();
+
+                for(Book memberBook : member.getBorrowedbooks()){
+                    if(memberBook.getIsbn().equals(isbn)){
+                        // Member already borrows book with same ISBN; try to return book
+                        Long bookId = memberBook.getId();
+                        URL url = new URL("http://localhost:8080/api/v1/" + memberId + "/return/" + bookId);
+                        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                        con.setRequestMethod("PUT");
+
+                        BufferedReader in = new BufferedReader(
+                                new InputStreamReader(con.getInputStream()));
+                        String inputLine;
+                        StringBuffer content = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null) {
+                            content.append(inputLine);
+                        }
+                        in.close();
+
+                        System.out.println("Response of PUT to borrow: " + content.toString());
+
+                        con.disconnect();
+
+                        break;
+                    }
+                }
+                //old
                 return handleExistingBook(foundBooks.get(0));
             }
 
@@ -91,7 +133,6 @@ public class ScannerController {
     }
 
     private ResponseEntity<String> handleExistingBook(Book existingBook) {
-        System.out.println("Book exists");
         if (existingBook.isBorrowed()) {
             System.out.println("Book is borrowed");
             existingBook.setReturnDate(LocalDate.now());
