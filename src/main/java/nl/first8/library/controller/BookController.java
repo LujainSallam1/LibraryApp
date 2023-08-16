@@ -35,52 +35,33 @@ public class BookController {
 
     @GetMapping("/books")
     public List<Book> getAll(@RequestParam(required = false) String isbn) {
-        if (isbn != null) {
-            return bookRepository.findByIsbn(isbn);
+       return bookAdminService.getAllBooks(isbn);
+    }
+
+    @GetMapping("/books/{id}")
+    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+        Optional<Book> bookOptional = bookAdminService.getBookById(id);
+
+        if (bookOptional.isPresent()) {
+            Book book = bookOptional.get();
+            return ResponseEntity.ok(book);
         } else {
-            return bookRepository.findAll();
+            return ResponseEntity.notFound().build();
         }
     }
 
 
-    @GetMapping("/books/{id}")
-    public ResponseEntity<Book> getById(@PathVariable Long id) {
-        Optional<Book> optionalBook = bookRepository.findById(id);
-        if (optionalBook.isPresent()) {
-            Book book = optionalBook.get();
-            return ResponseEntity.ok(book);
-        } else
-            return ResponseEntity.notFound().build();
-
-    }
-
     @PostMapping("/books")
     public ResponseEntity<Book> add(@RequestBody Book book) {
-        Book savedbook = bookRepository.save(book);
-        return ResponseEntity.ok(savedbook);
+        Book savedBook = bookAdminService.addBook(book);
+        return ResponseEntity.ok(savedBook);
     }
 
     @PutMapping("/books/{id}")
     public ResponseEntity<Book> update(@PathVariable(value = "id") Long id, @RequestBody Book body) {
-        Optional<Book> bookOptional = bookRepository.findById(id);
-        Book bookDB;
-
-        if (bookOptional.isPresent()) {
-            bookDB = bookOptional.get();
-
-            if (Objects.nonNull(body.getIsbn())) bookDB.setIsbn(body.getIsbn());
-            if (Objects.nonNull(body.getTitle())) bookDB.setTitle(body.getTitle());
-            if (Objects.nonNull(body.getAuthors())) bookDB.setAuthors(body.getAuthors());
-            if (Objects.nonNull(body.getPublishDate())) bookDB.setPublishDate(body.getPublishDate());
-            if (Objects.nonNull(body.getSummary())) bookDB.setSummary(body.getSummary());
-
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-
-        Book updatedBook = bookRepository.save(bookDB);
-        return ResponseEntity.ok(updatedBook);
+        return bookAdminService.updateBook(id, body);
     }
+
 
 
     @PutMapping("/books/{id}/borrow")
@@ -91,7 +72,8 @@ public class BookController {
     @PutMapping("/books/{id}/handin")
     public ResponseEntity<Book> handin(@PathVariable(value = "id") Long id) {
       return borrowReturnService.handin(id);
-}}
+}
+}
 
 
 
