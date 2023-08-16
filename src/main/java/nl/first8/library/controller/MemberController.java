@@ -119,6 +119,7 @@ public class MemberController {
             else { // Execution flow
                 book.setBorrowed(true);
                 book.setOutcheckDate(LocalDate.now());
+                book.setIncheckDate(null);
                 bookRepository.save(book);
 
                 member.getBorrowedbooks().add(book);
