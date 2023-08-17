@@ -1,7 +1,10 @@
 package nl.first8.library.service;
 
+import nl.first8.library.controller.exceptions.*;
 import nl.first8.library.domain.entity.Book;
+import nl.first8.library.domain.entity.Member;
 import nl.first8.library.repository.BookRepository;
+import nl.first8.library.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,9 @@ import java.util.Optional;
 public class BorrowReturnService {
     @Autowired
     private  BookRepository bookRepository;
+    @Autowired
+    private MemberRepository memberRepository;
+
 
 
     public ResponseEntity<Book> borrow(@PathVariable(value = "id") Long id) {
@@ -57,6 +63,61 @@ public class BorrowReturnService {
         } else {
             System.out.println("Book not found");
             return ResponseEntity.notFound().build();
+        }
+    }
+    @PutMapping("/members/{member_id}/borrow/{book_id}")
+    public ResponseEntity<String> borrowBookMember(@PathVariable(value = "member_id") Long memberId, @PathVariable(value = "book_id") Long bookId) {
+        Optional<Book> optionalBook = bookRepository.findById(bookId);
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+
+        if (!optionalBook.isPresent()) throw new BookNotFoundException(bookId);
+        else if (!optionalMember.isPresent()) throw new MemberNotFoundException(memberId);
+        else { // Execution flow
+            Book book = optionalBook.get();
+            Member member = optionalMember.get();
+
+            if (book.isBorrowed()) {
+                throw new BookAlreadyBorrowedException(book);
+            } else if (member.getBorrowedbooks().size() >= member.getMaxLeenbaarProducten()) {
+                throw new MemberMaxBorrowedException(memberId);
+            } else { // Execution flow
+                book.setBorrowed(true);
+                book.setBorrowDate(LocalDate.now());
+                book.setReturnDate(null);
+                bookRepository.save(book);
+
+                member.getBorrowedbooks().add(book);
+                memberRepository.save(member);
+
+                return ResponseEntity.ok("Member " + member.getId() + " borrowed book \"" + book.getTitle() + "\" with ID " + bookId + " successfully.");
+            }
+        }
+    }
+    public ResponseEntity<String> returnBookMember(@PathVariable(value = "member_id") Long memberId, @PathVariable(value = "book_id") Long bookId) {
+        Optional<Book> optionalBook = bookRepository.findById(bookId);
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+
+        if (!optionalBook.isPresent()) {
+            throw new BookNotFoundException(bookId);
+        } else if (!optionalMember.isPresent()) {
+            throw new MemberNotFoundException(memberId);
+        } else { // Execution flow
+            Book book = optionalBook.get();
+            Member member = optionalMember.get();
+
+            if (!book.isBorrowed()) {
+                throw new BookNotBorrowedException(book);
+            } else { // Execution flow
+                book.setBorrowed(false);
+                book.setReturnDate(LocalDate.now());
+                book.setBorrowDate(null);
+                bookRepository.save(book);
+
+                member.getBorrowedbooks().remove(book);
+                memberRepository.save(member);
+
+                return ResponseEntity.ok("Member " + member.getId() + " returned book \"" + book.getTitle() + "\" with ID " + bookId + " successfully.");
+            }
         }
     }
 
