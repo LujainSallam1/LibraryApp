@@ -72,7 +72,7 @@ public class MemberController {
         return borrowReturnService.borrowBookMember(memberId,bookId);
     }
 
-    @PutMapping("/{member_id}/return/{book_id}")
+    @PutMapping("/members/member_id}/return/{book_id}")
     public ResponseEntity<String> returnBookMember(@PathVariable(value = "member_id") Long memberId, @PathVariable(value = "book_id") Long bookId) {
         return borrowReturnService.returnBookMember(memberId, bookId);
     }}

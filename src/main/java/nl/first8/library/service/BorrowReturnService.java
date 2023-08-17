@@ -65,6 +65,8 @@ public class BorrowReturnService {
             return ResponseEntity.notFound().build();
         }
     }
+
+
     @PutMapping("/members/{member_id}/borrow/{book_id}")
     public ResponseEntity<String> borrowBookMember(@PathVariable(value = "member_id") Long memberId, @PathVariable(value = "book_id") Long bookId) {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
@@ -78,7 +80,7 @@ public class BorrowReturnService {
 
             if (book.isBorrowed()) {
                 throw new BookAlreadyBorrowedException(book);
-            } else if (member.getBorrowedbooks().size() >= member.getMaxLeenbaarProducten()) {
+            } else if (member.getBorrowedbooks().size() >= member.getMaxBorrowableProducts()) {
                 throw new MemberMaxBorrowedException(memberId);
             } else { // Execution flow
                 book.setBorrowed(true);

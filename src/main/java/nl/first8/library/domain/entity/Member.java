@@ -24,17 +24,17 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_id_seq")
     private Long id;
 
-    @Column(name = "naam", nullable = false)
-    private String naam;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "adres", nullable = false)
-    private String adres;
+    @Column(name = "address", nullable = false)
+    private String address;
 
-    @Column(name = "woonplaats", nullable = false)
-    private String woonplaats;
+    @Column(name = "city", nullable = false)
+    private String city;
 
-    @Column(name = "maxLeenbaarProducten" ,columnDefinition = "integer default 5")
-    private int maxLeenbaarProducten = 5;
+    @Column(name = "maxBorrowableProducts" ,columnDefinition = "integer default 5")
+    private int maxBorrowableProducts = 5;
 
     @Column(name = "disable", columnDefinition = "boolean default true")
     private boolean disable;
@@ -45,28 +45,28 @@ public class Member {
         this.disable = disable;
     }
 
-    public int getMaxLeenbaarProducten() {
-        return maxLeenbaarProducten;
+    public int getMaxBorrowableProducts() {
+        return maxBorrowableProducts;
     }
 
-    public void setMaxLeenbaarProducten(int maxLeenbaarProducten) {
-        this.maxLeenbaarProducten = maxLeenbaarProducten;
+    public void setMaxBorrowableProducts(int maxBorrowableProducts) {
+        this.maxBorrowableProducts = maxBorrowableProducts;
     }
 
-    public String getWoonplaats() {
-        return woonplaats;
+    public String getCity() {
+        return city;
     }
 
-    public void setWoonplaats(String woonplaats) {
-        this.woonplaats = woonplaats;
+    public void setCity(String city) {
+        this.city = city;
     }
 
-    public String getAdres() {
-        return adres;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAdres(String adres) {
-        this.adres = adres;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public Long getId() {
@@ -77,12 +77,12 @@ public class Member {
         this.id = id;
     }
 
-    public String getNaam() {
-        return naam;
+    public String getName() {
+        return name;
     }
 
-    public void setNaam(String naam) {
-        this.naam = naam;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public boolean isdisable() {

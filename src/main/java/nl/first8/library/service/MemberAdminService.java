@@ -42,9 +42,9 @@ public class MemberAdminService {
         if (memberOptional.isPresent()) {
             memberdb = memberOptional.get();
 
-            if (Objects.nonNull(member.getNaam())) memberdb.setNaam(member.getNaam());
-            if (Objects.nonNull(member.getAdres())) memberdb.setAdres(member.getAdres());
-            if (Objects.nonNull(member.getWoonplaats())) memberdb.setWoonplaats(member.getWoonplaats());
+            if (Objects.nonNull(member.getName())) memberdb.setName(member.getName());
+            if (Objects.nonNull(member.getAddress())) memberdb.setAddress(member.getAddress());
+            if (Objects.nonNull(member.getCity())) memberdb.setCity(member.getCity());
             if (Objects.nonNull(member.getId())) memberdb.setId(member.getId());
             if (Objects.nonNull(member.getBorrowedbooks())) memberdb.setBorrowedbooks(member.getBorrowedbooks());
 

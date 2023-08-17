@@ -28,13 +28,13 @@ public class MemberControllerTest {
 
         Member Member2=new Member(); Member Member1=new Member();
         Member1.setId(6L);
-        Member1.setNaam("Lujain");
-        Member1.setAdres("zijlkade");
-        Member1.setWoonplaats("Nieuwland");
+        Member1.setName("Lujain");
+        Member1.setAddress("zijlkade");
+        Member1.setCity("Nieuwland");
         Member2.setId(6L);
-        Member2.setNaam("Lujain");
-        Member2.setAdres("zijlkade");
-        Member2.setWoonplaats("Nieuwland");
+        Member2.setName("Lujain");
+        Member2.setAddress("zijlkade");
+        Member2.setCity("Nieuwland");
         mockMemberList.add(Member1);
         mockMemberList.add(Member2);
         when(memberRepository.findAll()).thenReturn(mockMemberList);
@@ -52,9 +52,9 @@ public class MemberControllerTest {
 //            Long existingId = 1L;
 //            Members Member1=new Members();
 //            Member1.setId(existingId);
-//            Member1.setNaam("Lujain");
-//            Member1.setAdres("zijlkade");
-//            Member1.setWoonplaats("Nieuwland");
+//            Member1.setName("Lujain");
+//            Member1.setAddress("zijlkade");
+//            Member1.setCity("Nieuwland");
 //
 //            MembersRepository membersRepository = mock(MembersRepository.class);
 //            when(membersRepository.findById(existingId)).thenReturn(Optional.of(Member1));
