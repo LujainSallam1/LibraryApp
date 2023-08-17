@@ -52,7 +52,7 @@ public class ScannerController {
     private ObjectMapper objectMapper;
 
     //TODO: rename endpoint, both here and in Python project
-    @PostMapping("/searchbooks_and_add")
+    @PostMapping("/scanner/handlePayload")
     public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload) {
         String isbn = payload.get("barcode_info");
         //at this point, the user can only do actions on behalf of itself, so member=user
@@ -74,7 +74,7 @@ public class ScannerController {
                     if(memberBook.getIsbn().equals(isbn)){
                         // Member already borrows book with same ISBN; try to return book for member by PUTting to relevant endpoint
                         Long bookId = memberBook.getId();
-                        URL url = new URL("http://localhost:8080/api/v1/" + memberId + "/return/" + bookId);
+                        URL url = new URL("http://localhost:8080/api/v1/members/" + memberId + "/return/" + bookId);
                         HttpURLConnection con = (HttpURLConnection) url.openConnection();
                         con.setRequestMethod("PUT");
 

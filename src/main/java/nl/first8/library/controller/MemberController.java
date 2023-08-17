@@ -90,7 +90,7 @@ public class MemberController {
         }
     }
 
-    @PutMapping("/{member_id}/return/{book_id}")
+    @PutMapping("/members/member_id}/return/{book_id}")
     public ResponseEntity<String> returnBookMember(@PathVariable(value = "member_id") Long memberId, @PathVariable(value = "book_id") Long bookId) {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
         Optional<Member> optionalMember = memberRepository.findById(memberId);
