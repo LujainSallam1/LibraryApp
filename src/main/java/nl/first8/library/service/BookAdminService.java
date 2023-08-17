@@ -32,32 +32,32 @@ public class BookAdminService {
         return bookRepository.save(book);
     }
 
-    public ResponseEntity<Book> updateBook(Long id, Book updatedBook) {
+    public Book updateBook(Long id, Book updatedBook) {
         Optional<Book> bookOptional = bookRepository.findById(id);
 
-        if (bookOptional.isPresent()) {
+        if (!bookOptional.isPresent()) {
+            throw new NullPointerException("Trying to update non-existing book.");
+        } else { // Execution flow
             Book bookDB = bookOptional.get();
 
-            if (Objects.nonNull(updatedBook.getIsbn())){
+            if (Objects.nonNull(updatedBook.getIsbn())) {
                 bookDB.setIsbn(updatedBook.getIsbn());
             }
-            if (Objects.nonNull(updatedBook.getTitle())){
+            if (Objects.nonNull(updatedBook.getTitle())) {
                 bookDB.setTitle(updatedBook.getTitle());
             }
-            if (Objects.nonNull(updatedBook.getAuthors())){
+            if (Objects.nonNull(updatedBook.getAuthors())) {
                 bookDB.setAuthors(updatedBook.getAuthors());
             }
-            if (Objects.nonNull(updatedBook.getPublishDate())){
+            if (Objects.nonNull(updatedBook.getPublishDate())) {
                 bookDB.setPublishDate(updatedBook.getPublishDate());
             }
-            if (Objects.nonNull(updatedBook.getSummary())){
+            if (Objects.nonNull(updatedBook.getSummary())) {
                 bookDB.setSummary(updatedBook.getSummary());
             }
 
             Book savedBook = bookRepository.save(bookDB);
-            return ResponseEntity.ok(savedBook);
-        } else {
-            return ResponseEntity.notFound().build();
+            return savedBook;
         }
     }
 }
