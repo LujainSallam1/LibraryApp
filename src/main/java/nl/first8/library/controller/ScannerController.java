@@ -161,28 +161,5 @@ public class ScannerController {
             System.out.println("Book not found at google");
             throw new GoogleBookNotFoundException(isbn);
         }
-
-
     }
-
-    private ResponseEntity<String> handleExistingBook(Book existingBook) {
-        if (existingBook.isBorrowed()) {
-            System.out.println("Book is borrowed");
-            existingBook.setReturnDate(LocalDate.now());
-            existingBook.setBorrowDate(null);
-            existingBook.setBorrowed(false);
-            bookRepository.save(existingBook);
-            System.out.println("Book returned successfully");
-            return ResponseEntity.ok("Book returned successfully");
-        } else {
-            System.out.println("Book is not borrowed");
-            existingBook.setReturnDate(null);
-            existingBook.setBorrowDate(LocalDate.now());
-            existingBook.setBorrowed(true);
-            bookRepository.save(existingBook);
-            System.out.println("Book borrowed successfully");
-            return ResponseEntity.ok("Book borrowed successfully");
-        }
-    }
-
 }
