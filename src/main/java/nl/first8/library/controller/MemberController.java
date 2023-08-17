@@ -36,28 +36,6 @@ public class MemberController {
         return ResponseEntity.ok(savedmember);
     }
 
-    @PutMapping("/books/{id}")
-    public ResponseEntity<Member> update(@PathVariable(value = "id") Long id, @RequestBody Member member) {
-        Optional<Member> memberOptional = memberRepository.findById(id);
-        Member memberdb;
-
-        if (memberOptional.isPresent()) {
-            memberdb = memberOptional.get();
-
-            if (Objects.nonNull(member.getNaam())) memberdb.setNaam(member.getNaam());
-            if (Objects.nonNull(member.getAdres())) memberdb.setAdres(member.getAdres());
-            if (Objects.nonNull(member.getWoonplaats())) memberdb.setWoonplaats(member.getWoonplaats());
-            if (Objects.nonNull(member.getId())) memberdb.setId(member.getId());
-            if (Objects.nonNull(member.getBorrowedbooks())) memberdb.setBorrowedbooks(member.getBorrowedbooks());
-
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-
-        Member updatedMember = memberRepository.save(memberdb);
-        return ResponseEntity.ok(updatedMember);
-    }
-
     @PutMapping("/members/{id}/disable")
     public boolean disable(@PathVariable(value = "id") Long id) {
         Optional<Member> optionalMember = memberRepository.findById(id);
