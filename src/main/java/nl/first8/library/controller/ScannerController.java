@@ -55,7 +55,7 @@ public class ScannerController {
     @PostMapping("/searchbooks_and_add")
     public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload) {
         String isbn = payload.get("barcode_info");
-        //at this point, the "user" can only do actions on behalf of itself, so member=user
+        //at this point, the user can only do actions on behalf of itself, so member=user
         Long memberId = Long.parseLong(payload.get("user_id"));
 
         try {
