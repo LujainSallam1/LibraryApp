@@ -74,7 +74,7 @@ public class MemberController {
 
             if (book.isBorrowed()) {
                 throw new BookAlreadyBorrowedException(book);
-            } else if (member.getBorrowedbooks().size() >= member.getMaxLeenbaarProducten()) {
+            } else if (member.getBorrowedbooks().size() >= member.getMaxBorrowableProducts()) {
                 throw new MemberMaxBorrowedException(memberId);
             } else { // Execution flow
                 book.setBorrowed(true);
