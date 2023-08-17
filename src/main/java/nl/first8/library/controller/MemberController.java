@@ -36,14 +36,9 @@ public class MemberController {
 
     @PostMapping("/members")
     public ResponseEntity<Member> add(@RequestBody Member member) {
-        Member savedmember = memberAdminService.addMember(member).getBody();
-        return ResponseEntity.ok(savedmember);
-    }
-
-    @PutMapping("/books/{id}")
-    public ResponseEntity<Member> update(@PathVariable(value = "id") Long id, @RequestBody Member member) {
-        return memberAdminService.update(id, member);
-    }
+            Member savedmember= memberAdminService.addmember(member);
+            return ResponseEntity.ok(savedmember);
+        }
 
     @PutMapping("/members/{id}/disable")
     public ResponseEntity<Optional<Member>> disable(@PathVariable(value = "id") Long id) {
@@ -72,7 +67,7 @@ public class MemberController {
         return borrowReturnService.borrowBookMember(memberId,bookId);
     }
 
-    @PutMapping("/members/member_id}/return/{book_id}")
+    @PutMapping("/members/{member_id}/return/{book_id}")
     public ResponseEntity<String> returnBookMember(@PathVariable(value = "member_id") Long memberId, @PathVariable(value = "book_id") Long bookId) {
         return borrowReturnService.returnBookMember(memberId, bookId);
     }}

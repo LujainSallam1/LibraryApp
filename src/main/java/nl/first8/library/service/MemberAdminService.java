@@ -30,9 +30,8 @@ public class MemberAdminService {
     public List<Member> getAll() {
     return memberRepository.findAll();
 }
-    public ResponseEntity<Member> addMember(@RequestBody Member member) {
-        Member savedmember = memberRepository.save(member);
-        return ResponseEntity.ok(savedmember);
+    public Member addmember(Member member) {
+        return memberRepository.save(member);
     }
 
     public ResponseEntity<Member> update(@PathVariable(value = "id") Long id, @RequestBody Member member) {
