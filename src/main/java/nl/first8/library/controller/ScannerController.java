@@ -1,6 +1,7 @@
 package nl.first8.library.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.first8.library.controller.exceptions.BookAlreadyBorrowedException;
 import nl.first8.library.controller.exceptions.GoogleBookNotFoundException;
 import nl.first8.library.controller.exceptions.MemberNotFoundException;
 import nl.first8.library.domain.GoogleBookApiResponse;
@@ -11,6 +12,7 @@ import nl.first8.library.repository.MemberRepository;
 import org.apache.http.HttpConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +31,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -69,7 +72,7 @@ public class ScannerController {
 
                 for(Book memberBook : member.getBorrowedbooks()){
                     if(memberBook.getIsbn().equals(isbn)){
-                        // Member already borrows book with same ISBN; try to return book
+                        // Member already borrows book with same ISBN; try to return book for member by PUTting to relevant endpoint
                         Long bookId = memberBook.getId();
                         URL url = new URL("http://localhost:8080/api/v1/" + memberId + "/return/" + bookId);
                         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -84,15 +87,45 @@ public class ScannerController {
                         }
                         in.close();
 
-                        System.out.println("Response of PUT to borrow: " + content.toString());
+                        System.out.println("Response of PUT to return: " + content.toString());
 
                         con.disconnect();
 
+                        return ResponseEntity.ok("Response of PUT to return: " + content.toString());
+                    }
+                }
+                // Member doesn't yet borrow a book with same ISBN; try to borrow book for member by PUTting to relevant endpoint
+                // First find non-borrowed book with ISBN
+                Book availableBook = null;
+                for (Book bookWithISBN: bookRepository.findByIsbn(isbn)){
+                    if (!bookWithISBN.isBorrowed()){
+                        availableBook = bookWithISBN;
                         break;
                     }
                 }
-                //old
-                return handleExistingBook(foundBooks.get(0));
+                if (Objects.isNull(availableBook)){
+                    return new ResponseEntity<>("All books with ISBN " + isbn + " have already been borrowed.", HttpStatus.BAD_REQUEST);
+                }
+                Long bookId = availableBook.getId();
+
+                URL url = new URL("http://localhost:8080/api/v1/members/" + memberId + "/borrow/" + bookId);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("PUT");
+
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuffer content = new StringBuffer();
+                while ((inputLine = in.readLine()) != null) {
+                    content.append(inputLine);
+                }
+                in.close();
+
+                System.out.println("Response of PUT to borrow: " + content.toString());
+
+                con.disconnect();
+
+                return ResponseEntity.ok("Response of PUT to borrow: " + content.toString());
             }
 
         } catch (MalformedURLException e) {
