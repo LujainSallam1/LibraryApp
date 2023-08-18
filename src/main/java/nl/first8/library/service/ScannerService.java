@@ -67,7 +67,6 @@ public class ScannerService {
                     }
                 }
 
-                // Execution flow
                 Long bookId = availableBook.getId();
                 Book book = borrowReturnService.returnBookMember(memberId, bookId);
                 return book; //null if no books were found
