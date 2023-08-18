@@ -28,13 +28,18 @@ public class MemberAdminService {
     private BookRepository bookRepository;
 
     public List<Member> getAll() {
-    return memberRepository.findAll();
-}
+        return memberRepository.findAll();
+    }
+
+    public Optional<Member> getMember(Long id){
+        return memberRepository.findById(id);
+    }
+
     public Member addmember(Member member) {
         return memberRepository.save(member);
     }
 
-    public ResponseEntity<Member> update(@PathVariable(value = "id") Long id, @RequestBody Member member) {
+    public ResponseEntity<Member> update( Long id, @RequestBody Member member) {
         Optional<Member> memberOptional = memberRepository.findById(id);
         Member memberdb;
 
@@ -55,7 +60,7 @@ public class MemberAdminService {
         return ResponseEntity.ok(updatedMember);
     }
 
-    public boolean disable(@PathVariable(value = "id") Long id) {
+    public boolean disable( Long id) {
         Optional<Member> optionalMember = memberRepository.findById(id);
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
@@ -68,7 +73,7 @@ public class MemberAdminService {
     }
 
 
-    public boolean enable(@PathVariable(value = "id") Long id) {
+    public boolean enable( Long id) {
         Optional<Member> optionalMember = memberRepository.findById(id);
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
@@ -80,34 +85,6 @@ public class MemberAdminService {
     }
 
 
-
-    public ResponseEntity<String> returnBookMember(@PathVariable(value = "member_id") Long memberId, @PathVariable(value = "book_id") Long bookId) {
-        Optional<Book> optionalBook = bookRepository.findById(bookId);
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
-
-        if (!optionalBook.isPresent()) {
-            throw new BookNotFoundException(bookId);
-        } else if (!optionalMember.isPresent()) {
-            throw new MemberNotFoundException(memberId);
-        } else { // Execution flow
-            Book book = optionalBook.get();
-            Member member = optionalMember.get();
-
-            if (!book.isBorrowed()) {
-                throw new BookNotBorrowedException(book);
-            } else { // Execution flow
-                book.setBorrowed(false);
-                book.setReturnDate(LocalDate.now());
-                book.setBorrowDate(null);
-                bookRepository.save(book);
-
-                member.getBorrowedbooks().remove(book);
-                memberRepository.save(member);
-
-                return ResponseEntity.ok("Member " + member.getId() + " returned book \"" + book.getTitle() + "\" with ID " + bookId + " successfully.");
-            }
-        }
-    }
 }
 
 

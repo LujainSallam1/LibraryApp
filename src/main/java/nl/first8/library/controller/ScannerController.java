@@ -9,6 +9,9 @@ import nl.first8.library.domain.entity.Book;
 import nl.first8.library.domain.entity.Member;
 import nl.first8.library.repository.BookRepository;
 import nl.first8.library.repository.MemberRepository;
+import nl.first8.library.service.GoogleBooksService;
+import nl.first8.library.service.MemberAdminService;
+import nl.first8.library.service.ScannerService;
 import org.apache.http.HttpConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,131 +38,18 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "/api/v1", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
+@RequestMapping(path = "/api/v1", produces = MediaType.APPLICATION_XML_VALUE)
 public class ScannerController {
 
-    @Autowired
-    public ScannerController(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
-    @Value("${google.books.api.key}")
-    private String googleBooksApiKey;
-    @Autowired
-    private BookRepository bookRepository;
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private ObjectMapper objectMapper;
+    private ScannerService scannerService;
 
-    //TODO: rename endpoint, both here and in Python project
     @PostMapping("/scanner/handlePayload")
-    public ResponseEntity<String> uploadBarcode(@RequestBody Map<String, String> payload) {
-        String isbn = payload.get("barcode_info");
-        //at this point, the user can only do actions on behalf of itself, so member=user
-        Long memberId = Long.parseLong(payload.get("user_id"));
-
-        try {
-            List<Book> foundBooks = bookRepository.findByIsbn(isbn);
-
-            Optional<Member> optionalMember = memberRepository.findById(memberId);
-
-            if (foundBooks == null || foundBooks.isEmpty()) {
-                return handleNonExistingBook(isbn);
-            } else if (!optionalMember.isPresent()) {
-                throw new MemberNotFoundException(memberId);
-            } else { // Execution Flow
-                Member member = optionalMember.get();
-
-                for(Book memberBook : member.getBorrowedbooks()){
-                    if(memberBook.getIsbn().equals(isbn)){
-                        // Member already borrows book with same ISBN; try to return book for member by PUTting to relevant endpoint
-                        Long bookId = memberBook.getId();
-                        URL url = new URL("http://localhost:8080/api/v1/members/" + memberId + "/return/" + bookId);
-                        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                        con.setRequestMethod("PUT");
-
-                        BufferedReader in = new BufferedReader(
-                                new InputStreamReader(con.getInputStream()));
-                        String inputLine;
-                        StringBuffer content = new StringBuffer();
-                        while ((inputLine = in.readLine()) != null) {
-                            content.append(inputLine);
-                        }
-                        in.close();
-
-                        System.out.println("Response of PUT to return: " + content.toString());
-
-                        con.disconnect();
-
-                        return ResponseEntity.ok("Response of PUT to return: " + content.toString());
-                    }
-                }
-                // Member doesn't yet borrow a book with same ISBN; try to borrow book for member by PUTting to relevant endpoint
-                // First find non-borrowed book with ISBN
-                Book availableBook = null;
-                for (Book bookWithISBN: bookRepository.findByIsbn(isbn)){
-                    if (!bookWithISBN.isBorrowed()){
-                        availableBook = bookWithISBN;
-                        break;
-                    }
-                }
-                if (Objects.isNull(availableBook)){
-                    return new ResponseEntity<>("All books with ISBN " + isbn + " have already been borrowed.", HttpStatus.BAD_REQUEST);
-                }
-                Long bookId = availableBook.getId();
-
-                URL url = new URL("http://localhost:8080/api/v1/members/" + memberId + "/borrow/" + bookId);
-                HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                con.setRequestMethod("PUT");
-
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(con.getInputStream()));
-                String inputLine;
-                StringBuffer content = new StringBuffer();
-                while ((inputLine = in.readLine()) != null) {
-                    content.append(inputLine);
-                }
-                in.close();
-
-                System.out.println("Response of PUT to borrow: " + content.toString());
-
-                con.disconnect();
-
-                return ResponseEntity.ok("Response of PUT to borrow: " + content.toString());
-            }
-
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private ResponseEntity<String> handleNonExistingBook(String isbn) throws IOException {
-        System.out.println("Book does not exist in our database");
-
-        URL url = new URL("https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn);
-        GoogleBookApiResponse response = objectMapper.readValue(url, GoogleBookApiResponse.class);
-
-        if (response != null && response.getItems() != null && !response.getItems().isEmpty()) {
-            GoogleBookApiResponse.GoogleBookItem item = response.getItems().get(0);
-            GoogleBookApiResponse.GoogleBookVolumeInfo volumeInfo = item.getVolumeInfo();
-            Book book = new Book();
-            book.setTitle(volumeInfo.getTitle());
-            if (volumeInfo.getAuthors() != null) {
-                book.setAuthors(volumeInfo.getAuthors().toString());
-            }
-            if (volumeInfo.getPublishDate() != null) {
-                book.setPublishDate(volumeInfo.getPublishDate());
-            }
-            book.setIsbn(isbn);
-            bookRepository.save(book);
-            System.out.println("Book saved successfully.");
-            return ResponseEntity.ok("Book saved successfully.");
-
+    public ResponseEntity<Book> handlePayload(@RequestBody Map<String, String> payload) {
+        Book book = scannerService.handlePayload(payload);
+        if (book == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            System.out.println("Book not found at google");
-            throw new GoogleBookNotFoundException(isbn);
+            return ResponseEntity.ok(book);
         }
     }
 }
