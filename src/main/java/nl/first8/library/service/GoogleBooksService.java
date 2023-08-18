@@ -3,12 +3,11 @@ package nl.first8.library.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.first8.library.controller.exceptions.GoogleBookNotFoundException;
 import nl.first8.library.domain.entity.Book;
-import nl.first8.library.domain.GoogleBookApiResponse;
+import nl.first8.library.domain.rest.GoogleBookApiResponse;
 import nl.first8.library.repository.BookRepository;
 import nl.first8.library.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

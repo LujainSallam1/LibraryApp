@@ -1,7 +1,7 @@
 package nl.first8.library.service;
 
 import nl.first8.library.domain.entity.Book;
-import nl.first8.library.domain.GoogleBookApiResponse;
+import nl.first8.library.domain.rest.GoogleBookApiResponse;
 import org.springframework.stereotype.Component;
 
 @Component

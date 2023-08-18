@@ -1,4 +1,4 @@
-package nl.first8.library.domain;
+package nl.first8.library.domain.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
