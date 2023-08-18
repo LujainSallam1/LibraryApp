@@ -9,17 +9,6 @@ import java.util.List;
 @Table(name = "member")
 @SequenceGenerator(name="members_id_seq", initialValue=11, allocationSize=1000)
 public class Member {
-    @OneToMany
-    private List<Book> borrowedbooks;
-
-    public List<Book> getBorrowedbooks() {
-        return borrowedbooks;
-    }
-
-    public void setBorrowedbooks(List<Book> borrowedbooks) {
-        this.borrowedbooks = borrowedbooks;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_id_seq")
     private Long id;
@@ -39,7 +28,17 @@ public class Member {
     @Column(name = "disable", columnDefinition = "boolean default true")
     private boolean disable;
 
+    @Column
+    @OneToMany
+    private List<Book> borrowedbooks;
 
+    public List<Book> getBorrowedbooks() {
+        return borrowedbooks;
+    }
+
+    public void setBorrowedbooks(List<Book> borrowedbooks) {
+        this.borrowedbooks = borrowedbooks;
+    }
 
     public void setDisable(boolean disable) {
         this.disable = disable;
