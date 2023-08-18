@@ -9,9 +9,3 @@ VALUES ('1', '9780446310789', 'To Kill a Mockingbird', 'Harper Lee', '1960-07-11
        ('8', '9780141036144', '1984', 'George Orwell', '1949-04-08'),
        ('9', '9780393320978', 'Beowulf', 'Unknown', '900-01-01'),
        ('10','9780060502935', 'Going Postal', 'Terry Pratchett', '2004-09-25');
-
-INSERT INTO member (id, name, address, city)
-VALUES ('1', 'Chezley', 'Epsilonplantsoen', 'Leiden'),
-       ('2', 'Lujain', 'Haven', 'Leiden' ),
-       ('3', 'Laurinde', 'Omegaplantsoen' , 'Leiden' ),
-       ('4', 'Lieke', 'Deltaweg', 'Leiden');
