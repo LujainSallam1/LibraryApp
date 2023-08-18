@@ -41,7 +41,7 @@ public class ScannerService {
 
             // Handle failures to retrieve book/member
             if (foundBooks == null || foundBooks.isEmpty()) {
-                return googleBooksService.handleNonExistingBook(isbn))
+                return googleBooksService.handleNonExistingBook(isbn);
             } else if (!optionalMember.isPresent()) {
                 throw new MemberNotFoundException(memberId);
             } else {
