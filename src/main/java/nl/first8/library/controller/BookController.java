@@ -7,6 +7,7 @@ import nl.first8.library.service.BorrowReturnService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class BookController {
     private BorrowReturnService borrowReturnService;
     @Autowired
     private BookAdminService bookAdminService;
-
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/books")
     public List<Book> getAll(@RequestParam(required = false) String isbn) {
         return bookAdminService.getAllBooks(isbn);

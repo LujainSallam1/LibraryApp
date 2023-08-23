@@ -40,6 +40,11 @@ public class MemberController {
             return ResponseEntity.ok(savedmember);
         }
 
+    @PutMapping("/books/{id}")
+    public ResponseEntity<Member> update(@PathVariable(value = "id") Long id, @RequestBody Member member) {
+        return memberAdminService.update(id, member);
+    }
+
     @PutMapping("/members/{id}/disable")
     public ResponseEntity<Optional<Member>> disable(@PathVariable(value = "id") Long id) {
         Optional<Member> optionalMember = memberRepository.findById(id);
