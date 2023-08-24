@@ -30,4 +30,5 @@ public class LibraryApplication {
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
-}}
+    }
+}

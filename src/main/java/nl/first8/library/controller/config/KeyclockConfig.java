@@ -51,7 +51,13 @@ public class KeyclockConfig extends KeycloakWebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         http.csrf().disable().anonymous().and().authorizeRequests().antMatchers(
-                        "/api/**"
+                        "/api/**",
+                        "/swagger-ui/*",
+                        "/swagger-ui.html",
+                        "/webjars/**",
+                        "/v2/**",
+                        "/swagger-resources/**"
+
 
                 ).permitAll().and()
                 .authorizeRequests().anyRequest().fullyAuthenticated();
