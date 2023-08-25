@@ -37,7 +37,7 @@ public class BookController {
             return ResponseEntity.notFound().build();
         }
     }
-
+   @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/books")
     public ResponseEntity<Book> add(@RequestBody Book book) {
         Book savedBook = bookAdminService.addBook(book);

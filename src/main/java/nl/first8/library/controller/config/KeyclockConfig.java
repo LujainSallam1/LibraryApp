@@ -54,9 +54,7 @@ public class KeyclockConfig extends KeycloakWebSecurityConfigurerAdapter {
                         "/api/**",
                         "/swagger-ui/*",
                         "/swagger-ui.html",
-                        "/webjars/**",
-                        "/v2/**",
-                        "/swagger-resources/**"
+                        "/webjars/**", "/v2/**", "/swagger-resources/**"
 
 
                 ).permitAll().and()
