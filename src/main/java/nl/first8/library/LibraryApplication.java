@@ -71,12 +71,10 @@ public class LibraryApplication {
         return oauth;
     }
 
-    // authorization scopes, not sure we have these...
+    // authorization scopes, just using one. Not sure how it matters
     private AuthorizationScope[] scopes() {
         AuthorizationScope[] scopes = {
-                new AuthorizationScope("read", "for read operations"),
-                new AuthorizationScope("write", "for write operations"),
-                new AuthorizationScope("foo", "Access foo API") };
+                new AuthorizationScope("roles", "OpenID Connect scope for add user roles to the access token") };
         return scopes;
     }
 
