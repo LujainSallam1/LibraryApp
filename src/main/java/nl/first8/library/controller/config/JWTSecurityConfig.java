@@ -24,8 +24,6 @@ public class JWTSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests(authz -> authz.antMatchers("/api/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
                                 "/webjars/**",
                                 "/v2/**",
                                 "/swagger-resources/**"
