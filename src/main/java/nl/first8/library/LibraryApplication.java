@@ -18,108 +18,12 @@ import java.util.Collections;
 import java.util.List;
 
 @Configuration
-@EnableSwagger2
+//@EnableSwagger2
 @SpringBootApplication
 @OpenAPIDefinition
 public class LibraryApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(LibraryApplication.class, args);
-    }
-
-    @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("nl.first8.library.controller"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(apiInfo())
-                .securitySchemes(Collections.singletonList(securityScheme()))
-                .securityContexts(Collections.singletonList(securityContext()));
-
-    }
-
-    private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title("My API")
-                .description("My API Documentation")
-                .version("1.0")
-                .build();
-    }
-
-    private SecurityScheme securityScheme() {
-        return new OAuthBuilder()
-                .name("OAuth2")
-                .grantTypes(grantTypes())
-                .scopes(Collections.singletonList(openidScope()))
-
-                .build();
-    }
-
-    private List<GrantType> grantTypes() {
-        GrantType authorizationCode = new AuthorizationCodeGrantBuilder()
-                .tokenEndpoint(new TokenEndpointBuilder()
-                        .url("http://localhost:8080/realms/libraryapp/protocol/openid-connect/token")
-                        .build())
-                .tokenRequestEndpoint(new TokenRequestEndpointBuilder()
-                        .url("http://localhost:8080/realms/libraryapp/protocol/openid-connect/auth").
-                        clientIdName("frontend")
-                        .clientSecretName("uE3FLCoOpZyKcjFdNiga2VuiWX2Pfv7I")
-                        .build())
-                .build();
-
-        return Collections.singletonList(authorizationCode);
-    }
-
-    private AuthorizationScope openidScope() {
-        return new AuthorizationScope("openid", "OpenID Connect Scope");
-    }
-
-    private SecurityContext securityContext() {
-        return SecurityContext.builder()
-                .securityReferences(Arrays.asList(new SecurityReference("OAuth2", new AuthorizationScope[]{openidScope()})))
-                .forPaths(PathSelectors.any()) // تطبيق SecurityContext على جميع المسارات
-                .build();
-    }
-
-//    @Bean
-//    public Docket api() {
-//        return new Docket(DocumentationType.SWAGGER_2)
-//                .select()
-//                .apis(RequestHandlerSelectors.basePackage("nl.first8.library.controller"))
-//                .paths(PathSelectors.any())
-//                .build()
-//                .apiInfo(apiInfo())
-//                .securitySchemes(Arrays.asList(securityScheme()))
-//                .securityContexts(Collections.singletonList(securityContext()));
-//    }
-//
-//    private ApiInfo apiInfo() {
-//        return new ApiInfoBuilder()
-//                .title("My API")
-//                .description("My API Documentation")
-//                .version("1.0")
-//                .build();
-//    }
-//
-//    private SecurityScheme securityScheme() {
-//        return new BasicAuth("basicAuth");
-//    }
-//
-//    private SecurityContext securityContext() {
-//        return SecurityContext.builder()
-//                .securityReferences(Collections.singletonList(basicAuthReference()))
-//                .forPaths(PathSelectors.any())
-//                .build();
-//    }
-//
-//    private SecurityReference basicAuthReference() {
-//        return new SecurityReference("basicAuth", new AuthorizationScope[0]);
-//    }
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
     }
 }

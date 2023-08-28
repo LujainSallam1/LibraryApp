@@ -20,12 +20,12 @@ public class BookController {
     private BorrowReturnService borrowReturnService;
     @Autowired
     private BookAdminService bookAdminService;
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER_EMPLOYEE')")
     @GetMapping("/books")
     public List<Book> getAll(@RequestParam(required = false) String isbn) {
         return bookAdminService.getAllBooks(isbn);
     }
-
+    @PreAuthorize("hasRole('ROLE_USER_EMPLOYEE')")
     @GetMapping("/books/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Long id) {
         Optional<Book> bookOptional = bookAdminService.getBookById(id);
@@ -37,24 +37,24 @@ public class BookController {
             return ResponseEntity.notFound().build();
         }
     }
-   @PreAuthorize("hasRole('ROLE_USER')")
+   @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @PostMapping("/books")
     public ResponseEntity<Book> add(@RequestBody Book book) {
         Book savedBook = bookAdminService.addBook(book);
         return ResponseEntity.ok(savedBook);
     }
-
-    @PutMapping("/books/{id}")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    @PostMapping("/books/{id}")
     public ResponseEntity<Book> update(@PathVariable(value = "id") Long id, @RequestBody Book body) {
         Book book = bookAdminService.updateBook(id, body);
         return ResponseEntity.ok(book);
     }
-
+    @PreAuthorize("hasRole('ROLE_USER_EMPLOYEE')")
     @PutMapping("/books/{id}/borrow")
     public ResponseEntity<Book> borrow(@PathVariable(value = "id") Long id) {
         return borrowReturnService.borrow(id);
     }
-
+    @PreAuthorize("hasRole('ROLE_USER_EMPLOYEE')")
     @PutMapping("/books/{id}/handin")
     public ResponseEntity<Book> handin(@PathVariable(value = "id") Long id) {
         return borrowReturnService.handin(id);

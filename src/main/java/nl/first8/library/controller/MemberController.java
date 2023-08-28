@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,24 +28,24 @@ public class MemberController {
     private MemberRepository memberRepository;
     @Autowired
     private BookRepository bookRepository;
-
+    @PreAuthorize("hasRole('ROLE_USER_EMPLOYEE')")
     @GetMapping("/members")
     public List<Member> getAll() {
         return memberAdminService.getAll();
     }
 
-
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @PostMapping("/members")
     public ResponseEntity<Member> add(@RequestBody Member member) {
             Member savedmember= memberAdminService.addmember(member);
             return ResponseEntity.ok(savedmember);
         }
-
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @PutMapping("/books/{id}")
     public ResponseEntity<Member> update(@PathVariable(value = "id") Long id, @RequestBody Member member) {
         return memberAdminService.update(id, member);
     }
-
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @PutMapping("/members/{id}/disable")
     public ResponseEntity<Optional<Member>> disable(@PathVariable(value = "id") Long id) {
         Optional<Member> optionalMember = memberRepository.findById(id);
@@ -54,7 +55,7 @@ public class MemberController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
+    } @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
 
     @PutMapping("/members/{id}/enable")
     public ResponseEntity<String> enable(@PathVariable(value = "id") Long id) {
@@ -66,12 +67,12 @@ public class MemberController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    @PreAuthorize("hasRole('ROLE_USER_EMPLOYEE')")
     @PutMapping("/members/{member_id}/borrow/{book_id}")
     public ResponseEntity<String> borrowBookMember(@PathVariable(value = "member_id") Long memberId, @PathVariable(value = "book_id") Long bookId) {
         return borrowReturnService.borrowBookMember(memberId,bookId);
     }
-
+    @PreAuthorize("hasRole('ROLE_USER_EMPLOYEE')")
     @PutMapping("/members/{member_id}/return/{book_id}")
     public ResponseEntity<String> returnBookMember(@PathVariable(value = "member_id") Long memberId, @PathVariable(value = "book_id") Long bookId) {
         return borrowReturnService.returnBookMember(memberId, bookId);
