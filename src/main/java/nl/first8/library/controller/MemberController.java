@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,6 +29,7 @@ public class MemberController {
     @Autowired
     private BookRepository bookRepository;
 
+//    @PreAuthorize("hasRole('EMPLOYEE')")
     @GetMapping("/members")
     public List<Member> getAll() {
         return memberAdminService.getAll();
