@@ -29,7 +29,7 @@ public class MemberController {
     @Autowired
     private BookRepository bookRepository;
 
-//    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('EMPLOYEE')")
     @GetMapping("/members")
     public List<Member> getAll() {
         return memberAdminService.getAll();

@@ -23,10 +23,14 @@ public class JWTSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests(authz -> authz.antMatchers(HttpMethod.GET, "/api/v1/members")
-                        .hasRole("EMPLOYEE")
-                        .anyRequest()
-                        .authenticated())
+        http.authorizeRequests(authz -> authz.antMatchers("/api/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/webjars/**",
+                                "/v2/**",
+                                "/swagger-resources/**"
+                        ).permitAll()
+                        .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt());
         return http.build();
     }
