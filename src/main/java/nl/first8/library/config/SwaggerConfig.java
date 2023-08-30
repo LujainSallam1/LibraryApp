@@ -1,4 +1,4 @@
-package nl.first8.library.controller.config;
+package nl.first8.library.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

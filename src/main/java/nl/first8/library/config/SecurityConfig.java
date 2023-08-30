@@ -1,4 +1,4 @@
-package nl.first8.library.controller.config;
+package nl.first8.library.config;
 
 import com.nimbusds.jose.shaded.json.JSONObject;
 import org.springframework.context.annotation.Bean;
@@ -34,10 +34,10 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt())
                 .logout(logout -> logout
-                        .logoutUrl("http://localhost:8080/realms/libraryapp/protocol/openid-connect/logout") // تحديد مسار تسجيل الخروج
-                        .logoutSuccessUrl("http://localhost:8000/swagger-ui") // تحويل المستخدم بعد تسجيل الخروج
-                        .invalidateHttpSession(true) // إلغاء جلسة المستخدم
-                        .deleteCookies("JSESSIONID")) // حذف ملفات تعريف الارتباط
+                        .logoutUrl("http://localhost:8080/realms/libraryapp/protocol/openid-connect/logout")
+                        .logoutSuccessUrl("http://localhost:8000/swagger-ui")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID"))
                 .csrf().disable();
 
         http.headers().frameOptions().disable();

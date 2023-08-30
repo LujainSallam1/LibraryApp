@@ -47,11 +47,11 @@ public class MemberController {
     }
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @PutMapping("/members/{id}/disable")
-    public ResponseEntity<Optional<Member>> disable(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<String> disable(@PathVariable(value = "id") Long id) {
         Optional<Member> optionalMember = memberRepository.findById(id);
         boolean success = memberAdminService.disable(id);
         if (success) {
-            return ResponseEntity.ok(optionalMember);
+            return ResponseEntity.ok("Member disable successfully.");
         } else {
             return ResponseEntity.notFound().build();
         }
